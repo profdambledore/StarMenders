@@ -3,6 +3,10 @@
 
 #include "Core/Character/Character_Parent.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "DrawDebugHelpers.h"
+
 // Sets default values
 ACharacter_Parent::ACharacter_Parent()
 {
@@ -12,6 +16,15 @@ ACharacter_Parent::ACharacter_Parent()
 	FirstPersonCamera->SetRelativeLocation(FVector(90.0f, 0.0f, 0.0f));
 	FirstPersonCamera->bUsePawnControlRotation = true;
 	FirstPersonCamera->SetupAttachment(GetMesh(), "");
+
+	// Setup the characters pick up spring arm
+	PickUpSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Pick up Spring Arm"));
+	PickUpSpringArm->TargetArmLength = PickUpArmLength;
+	PickUpSpringArm->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	PickUpSpringArm->SetupAttachment(FirstPersonCamera, "");
+
+	// Setup the object physics handle
+	ObjectPhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Object Physics Handle"));
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -43,6 +56,10 @@ void ACharacter_Parent::MoveX(float AxisValue)
 	if (AxisValue != 0 && !bMovementDisabled) {
 		// Move on the X axis based on the input's axis value
 		AddMovementInput(FirstPersonCamera->GetForwardVector(), AxisValue, false);
+		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
+			// Update the PhysicsHandles TargetLocation
+			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
+		}
 	}
 }
 
@@ -51,6 +68,10 @@ void ACharacter_Parent::MoveY(float AxisValue)
 	if (AxisValue != 0 && !bMovementDisabled) {
 		// Move on the X axis based on the input's axis value
 		AddMovementInput(FirstPersonCamera->GetRightVector(), AxisValue, false);
+		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
+			// Update the PhysicsHandles TargetLocation
+			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
+		}
 	}
 }
 
@@ -61,17 +82,55 @@ void ACharacter_Parent::StartJump()
 
 void ACharacter_Parent::Interact()
 {
+	// Check if this character is currently holding an object
+	if (ObjectPhysicsHandle->GetGrabbedComponent()) {
+		// If so, stop grabbing the component
+		ObjectPhysicsHandle->ReleaseComponent();
+
+		//ActorHeld->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		//ActorHeld = nullptr;
+	}
+	else {
+		// Fire a line trace infront of this character
+		FHitResult TraceHit;
+		FCollisionQueryParams TraceParams;
+		TraceParams.AddIgnoredActor(this);
+
+		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, GetActorLocation(), GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), ECC_WorldDynamic, TraceParams);
+		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), FColor::White, true, 5, 0, 5);
+		// Check if the object hit has a tag of "CanBePickedUp"
+		if (TraceHit.GetActor()) {
+			if (TraceHit.GetActor()->ActorHasTag(FName("CanBePickedUp"))) {
+				UE_LOG(LogTemp, Warning, TEXT("Object hit = %s"), *TraceHit.GetActor()->GetName());
+				// If so, grab the actor via the ObjectPhysicsHandle
+				// Calculate the object's component bounds to grab it in the center of the object
+				FVector BoxExtents;
+				BoxExtents = TraceHit.GetComponent()->GetLocalBounds().BoxExtent;
+				BoxExtents = BoxExtents / 6;
+				ObjectPhysicsHandle->GrabComponentAtLocationWithRotation(TraceHit.GetComponent(), "", TraceHit.GetComponent()->GetComponentLocation() + BoxExtents, TraceHit.GetComponent()->GetComponentRotation());
+
+				//GetLocalBounds().BoxExtent - TraceHit.GetActor()->GetActorLocation();
+				//FVector ObjectCenter = FVector((Origin.X + BoxExtent.X) / 2, (Origin.Y + BoxExtent.Y) / 2, (Origin.Z + BoxExtent.Z) /2);
+				// 
+				//ObjectPhysicsHandle->GrabComponentAtLocation(TraceHit.GetComponent(), "", TraceHit.GetComponent()->GetComponentLocation() + FVector(50.0f, 50.0f, 50.0f), false);
+				//TraceHit.GetActor()->AttachToComponent(PickUpSpringArm, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), USpringArmComponent::SocketName);
+				//ActorHeld = TraceHit.GetActor();
+			}
+		}
+	}
 }
 
 void ACharacter_Parent::RotateCamera(FVector2D AxisValue)
 {
-	if (AxisValue.X != 0 && !bMovementDisabled) {
+	if (!bMovementDisabled) {
 		// Rotate on the X axis based on the input's axis value
 		AddControllerYawInput(AxisValue.X);
-	}
-	if (AxisValue.Y != 0 && !bMovementDisabled) {
-		// Rotate on the Y axis based on the input's axis value
 		AddControllerPitchInput(AxisValue.Y);
+
+		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
+			// Update the PhysicsHandles TargetLocation
+			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
+		}
 	}
 }
 

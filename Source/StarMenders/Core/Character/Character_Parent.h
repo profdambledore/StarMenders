@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 #include "Character_Parent.generated.h"
 
@@ -53,9 +54,25 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* FirstPersonCamera = nullptr;
 
+	// SpringArmComponent of the character's pick up item location
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	USpringArmComponent* PickUpSpringArm = nullptr;
+
+	// PhysicsHandleComponent used to pick up objects in the world
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPhysicsHandleComponent* ObjectPhysicsHandle = nullptr;
+
 
 private:
 	/// -- Actives --
 	// Bool denoting if the character can move or not
 	bool bMovementDisabled = false;
+
+	/// -- Component Data --
+	// Float denoting the character's pick up spring arm
+	float PickUpArmLength = 300.0f;
+
+	// Actor pointer storing the actor currently being held by this character
+	// May not be needed
+	//AActor* ActorHeld = nullptr;
 };

@@ -86,7 +86,6 @@ void AController_Player::Interact(const FInputActionValue& Value)
 
 void AController_Player::RotateCamera(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("value"));
 	if (Character) {
 		Character->RotateCamera(Value.Get<FVector2D>());
 	}
