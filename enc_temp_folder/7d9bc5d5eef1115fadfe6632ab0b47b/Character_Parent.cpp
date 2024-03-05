@@ -20,9 +20,6 @@ ACharacter_Parent::ACharacter_Parent()
 	// Setup the object physics handle
 	ObjectPhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Object Physics Handle"));
 
-	// Setup the character's gameplay tags
-	Tags.Add("CanActivateButtons"); // Allows the character to activate buttons
-
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -52,10 +49,7 @@ void ACharacter_Parent::MoveX(float AxisValue)
 {
 	if (AxisValue != 0 && !bMovementDisabled) {
 		// Move on the X axis based on the input's axis value
-		// Get the camera's forward vector X and Y, removing the Z
-		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
-		Direction = FVector(Direction.X, Direction.Y, 0.0f).GetSafeNormal();
-		AddMovementInput(Direction, AxisValue, false);
+		AddMovementInput(FirstPersonCamera->GetForwardVector(), AxisValue, false);
 		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
 			// Update the PhysicsHandles TargetLocation
 			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));

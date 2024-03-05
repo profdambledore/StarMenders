@@ -54,10 +54,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* FirstPersonCamera = nullptr;
 
-	// SpringArmComponent of the character's pick up item location
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	USpringArmComponent* PickUpSpringArm = nullptr;
-
 	// PhysicsHandleComponent used to pick up objects in the world
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UPhysicsHandleComponent* ObjectPhysicsHandle = nullptr;
