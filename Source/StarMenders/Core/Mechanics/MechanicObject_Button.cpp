@@ -40,7 +40,7 @@ void AMechanicObject_Button::OnButtonBeginOverlap(UPrimitiveComponent* Overlappe
 		OverlapActors.Add(OtherActor);
 
 		// If OverlapActors now has exactly one index, activate the button
-		if (OverlapActors.Num() == 1) {
+		if (OverlapActors.Num() == 1 && ObjectState == On) {
 			StartTrigger();
 		}
 	}
@@ -53,7 +53,7 @@ void AMechanicObject_Button::OnButtonEndOverlap(UPrimitiveComponent* OverlappedC
 		OverlapActors.Remove(OtherActor);
 
 		// If OverlapActors now is empty, deactivate the button
-		if (OverlapActors.Num() == 0) {
+		if (OverlapActors.Num() == 0 && ObjectState != Off) {
 			EndTrigger();
 		}
 	}
@@ -67,23 +67,50 @@ void AMechanicObject_Button::Tick(float DeltaTime)
 
 void AMechanicObject_Button::StartTrigger()
 {
-	bActive = true;
+	ObjectState = Active;
 
-	// Activate the trigger on all output objects
+	// Activate all output objects
 	for (AMechanicObject_Parent* i : OutputsObjects) {
-		i->StartTrigger();
+		i->ActivateObject(true);
 		i->BlueprintTestFunction();
 	}
 }
 
 void AMechanicObject_Button::EndTrigger()
 {
-	bActive = false;
+	ObjectState = On;
 
-	// Deactivate the trigger on all output devices
+	// Deactivate all output devices
 	for (AMechanicObject_Parent* i : OutputsObjects) {
-		i->EndTrigger();
+		i->ActivateObject(false);
 		i->BlueprintTestFunction();
+	}
+}
+
+void AMechanicObject_Button::ActivateObject(bool bPositive)
+{
+	if (bPositive) {
+		TriggerCount++;
+	}
+	else {
+		TriggerCount--;
+	}
+
+	// Check if the TriggerCount has now reached the TriggerReqirements
+	if (TriggerCount >= TriggerRequirement) {
+		// Check if the object is currently being triggered.  If so, StartTrigger
+		if (OverlapActors.Num() == 1) {
+			StartTrigger();
+		}
+		ObjectState = EObjectState::On;
+		UE_LOG(LogTemp, Warning, TEXT("State On in %s"), *this->GetName());
+	}
+	else {
+		if (OverlapActors.Num() != 0) {
+			EndTrigger();
+		}
+
+		ObjectState = EObjectState::Off;
 	}
 }
 

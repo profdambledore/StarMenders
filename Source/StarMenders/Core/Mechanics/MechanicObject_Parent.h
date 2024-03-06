@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "MechanicObject_Parent.generated.h"
 
+UENUM(BlueprintType, Category = "Mechanics")
+enum EObjectState
+{
+	Off UMETA(DisplayName = "Off"),
+	On UMETA(DisplayName = "On"),
+	Active UMETA(DisplayName = "Active")
+};
+
 UCLASS()
 class STARMENDERS_API AMechanicObject_Parent : public AActor
 {
@@ -18,12 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	/// -- Trigger Function --
-	// Called when this object recieves it's input
-	virtual void StartTrigger();
-
-	// Called when this object stops recieving it's input
-	virtual void EndTrigger();
+	/// -- Active Functions --
+	// Called when external objects activate this object
+	virtual void ActivateObject(bool bPositive);
 
 	// Called to modify the visual elements of this object
 	UFUNCTION(BlueprintImplementableEvent)
@@ -36,6 +41,13 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	/// -- Trigger Function --
+	// Called when this object recieves it's input
+	virtual void StartTrigger();
+
+	// Called when this object stops recieving it's input
+	virtual void EndTrigger();
 
 public:	
 	/// -- Global Components --
@@ -50,6 +62,19 @@ public:
 	// Boolean denoting if the mechanic is active or not
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Properties")
 	bool bActive = false;
+
+	// Enum denoting the object's current state
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Properties")
+	TEnumAsByte<EObjectState> ObjectState;
+
+	/// -- Inputs --
+	// Integar denoting the amount of triggers required to turn this object on
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
+	int TriggerRequirement;
+
+	// Integar denoting the current amount of triggers currently infuencing this object
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
+	int TriggerCount;
 
 	/// -- Outputs --
 	// TArray of pointers to other MechanicObjects

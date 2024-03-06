@@ -28,6 +28,27 @@ void AMechanicObject_Parent::Tick(float DeltaTime)
 
 }
 
+void AMechanicObject_Parent::ActivateObject(bool bPositive)
+{
+	if (bPositive) {
+		TriggerCount++;
+	}
+	else {
+		TriggerCount--;
+	}
+
+	// Check if the TriggerCount has now reached the TriggerReqirements
+	if (TriggerCount >= TriggerRequirement) {
+		ObjectState = EObjectState::On;
+		UE_LOG(LogTemp, Warning, TEXT("State On in %s"), *this->GetName());
+		StartTrigger();
+	}
+	else {
+		ObjectState = EObjectState::Off;
+		EndTrigger();
+	}
+}
+
 void AMechanicObject_Parent::StartTrigger()
 {
 	bActive = true;

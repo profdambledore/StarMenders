@@ -28,6 +28,9 @@ public:
 	// Called when this object stops recieving it's input
 	virtual void EndTrigger() override;
 
+	// Called when this object stops recieving it's input
+	virtual void ActivateObject(bool bPositive) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
