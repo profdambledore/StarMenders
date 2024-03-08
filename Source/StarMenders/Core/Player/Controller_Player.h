@@ -42,10 +42,16 @@ protected:
 	// Called to make the character's camera rotate
 	void RotateCamera(const FInputActionValue& Value);
 
+	// Called to make the character enter their menu
+	void ToggleMenu(const FInputActionValue& Value);
+
 private:
 	/// -- Controlled Character --
 	// Pointer to the character this controller possesses
 	class ACharacter_Parent* Character = nullptr;
+
+	// Bool denoting if the character is in their menu
+	bool bInMenu = false;
 
 	/// -- Inputs --
 	// Pointer to the Input Config File

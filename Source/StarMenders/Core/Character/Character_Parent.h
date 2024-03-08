@@ -10,6 +10,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 
 #include "Character_Parent.generated.h"
 
@@ -44,6 +46,16 @@ public:
 	// Called to make the character's camera rotate
 	void RotateCamera(FVector2D AxisValue);
 
+	// Called to make the character enter their menu
+	void ToggleMenu(bool bInMenu);
+
+	/// -- Interaction --
+	// Called to return CurrentRecordPad
+	class ARecordPad* GetCurrentRecordPad();
+
+	// Called to set the CurrentRecordPad
+	void SetCurrentRecordPad(class ARecordPad* NewRecordPad);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,17 +70,30 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UPhysicsHandleComponent* ObjectPhysicsHandle = nullptr;
 
+	// WidgetComponent used to display the InGame UI
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UWidgetComponent* MenuWidgetComponent;
+
+	// WidgetInteractionComponent used to interact with MenuWidgetComponent
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UWidgetInteractionComponent* WidgetInteractionComponent;
+
 
 private:
 	/// -- Actives --
 	// Bool denoting if the character can move or not
 	bool bMovementDisabled = false;
 
+	// Pointer to the record pad currently being accessed
+	class ARecordPad* CurrentRecordPad = nullptr;
+
 	/// -- Component Data --
 	// Float denoting the character's pick up spring arm
 	float PickUpArmLength = 300.0f;
+	
+	/// -- UI --
+	// Pointer to the UI added to the viewport
+	class UInGame_Master* MenuUI = nullptr;
 
-	// Actor pointer storing the actor currently being held by this character
-	// May not be needed
-	//AActor* ActorHeld = nullptr;
+
 };

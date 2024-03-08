@@ -28,6 +28,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement Inputs")
 	class UInputAction* CameraInput = nullptr;
 
+	// Pointer to the toggle menu player input
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement Inputs")
+	class UInputAction* MenuInput = nullptr;
+
 	// Pointer to the jump player input
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement Inputs")
 	class UInputAction* JumpInput = nullptr;

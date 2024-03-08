@@ -7,21 +7,38 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 
+#include "Core/UI/InGame_Master.h"
+
 // Sets default values
 ACharacter_Parent::ACharacter_Parent()
 {
 	// Setup the character's components
 	// Setup the Player's Cameras
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
-	FirstPersonCamera->SetRelativeLocation(FVector(90.0f, 0.0f, 0.0f));
+	FirstPersonCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
 	FirstPersonCamera->bUsePawnControlRotation = true;
 	FirstPersonCamera->SetupAttachment(GetMesh(), "");
 
 	// Setup the object physics handle
 	ObjectPhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Object Physics Handle"));
 
+	// Setup the MenuWidgetComponent and the WidgetInteractionComponent
+	MenuWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu Widget Component"));
+	MenuWidgetComponent->SetupAttachment(GetMesh(), "");
+
+	WidgetInteractionComponent = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Widget Interaction Component"));
+	WidgetInteractionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
+	WidgetInteractionComponent->InteractionSource = EWidgetInteractionSource::Mouse;
+	WidgetInteractionComponent->SetupAttachment(FirstPersonCamera, "");
+
 	// Setup the character's gameplay tags
 	Tags.Add("CanActivateButtons"); // Allows the character to activate buttons
+
+	// Get the InGame UserWidget for the character and store it
+	static ConstructorHelpers::FClassFinder<UUserWidget>UIClass(TEXT("/Game/Core/UI/WBP_InGame"));
+	if (UIClass.Succeeded()) {
+		MenuWidgetComponent->SetWidgetClass(UIClass.Class);
+	};
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,6 +56,9 @@ void ACharacter_Parent::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Get reference to the interact widget class
+	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
+	MenuUI->SetPlayerOwner(this);
 }
 
 // Called to bind functionality to input
@@ -58,7 +78,7 @@ void ACharacter_Parent::MoveX(float AxisValue)
 		AddMovementInput(Direction, AxisValue, false);
 		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
 			// Update the PhysicsHandles TargetLocation
-			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
+			ObjectPhysicsHandle->SetTargetLocationAndRotation(FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
 		}
 	}
 }
@@ -70,7 +90,7 @@ void ACharacter_Parent::MoveY(float AxisValue)
 		AddMovementInput(FirstPersonCamera->GetRightVector(), AxisValue, false);
 		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
 			// Update the PhysicsHandles TargetLocation
-			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
+			ObjectPhysicsHandle->SetTargetLocationAndRotation(FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
 		}
 	}
 }
@@ -93,7 +113,7 @@ void ACharacter_Parent::Interact()
 		FCollisionQueryParams TraceParams;
 		TraceParams.AddIgnoredActor(this);
 
-		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, GetActorLocation(), GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), ECC_WorldDynamic, TraceParams);
+		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, FirstPersonCamera->GetComponentLocation(), FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), ECC_WorldDynamic, TraceParams);
 		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), FColor::White, true, 5, 0, 5);
 		// Check if the object hit has a tag of "CanBePickedUp"
 		if (TraceHit.GetActor()) {
@@ -119,8 +139,24 @@ void ACharacter_Parent::RotateCamera(FVector2D AxisValue)
 
 		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
 			// Update the PhysicsHandles TargetLocation
-			ObjectPhysicsHandle->SetTargetLocationAndRotation(GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
+			ObjectPhysicsHandle->SetTargetLocationAndRotation(FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
 		}
 	}
+}
+
+void ACharacter_Parent::ToggleMenu(bool bInMenu)
+{
+	MenuWidgetComponent->SetVisibility(bInMenu);
+	bMovementDisabled = bInMenu;
+}
+
+ARecordPad* ACharacter_Parent::GetCurrentRecordPad()
+{
+	return CurrentRecordPad;
+}
+
+void ACharacter_Parent::SetCurrentRecordPad(ARecordPad* NewRecordPad)
+{
+	CurrentRecordPad = NewRecordPad;
 }
 

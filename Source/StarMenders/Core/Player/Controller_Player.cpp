@@ -52,6 +52,7 @@ void AController_Player::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InputConfig->JumpInput, ETriggerEvent::Triggered, this, &AController_Player::Jump);
 		EnhancedInputComponent->BindAction(InputConfig->InteractInput, ETriggerEvent::Triggered, this, &AController_Player::Interact);
 		EnhancedInputComponent->BindAction(InputConfig->CameraInput, ETriggerEvent::Triggered, this, &AController_Player::RotateCamera);
+		EnhancedInputComponent->BindAction(InputConfig->MenuInput, ETriggerEvent::Triggered, this, &AController_Player::ToggleMenu);
 	}
 }
 
@@ -88,5 +89,14 @@ void AController_Player::RotateCamera(const FInputActionValue& Value)
 {
 	if (Character) {
 		Character->RotateCamera(Value.Get<FVector2D>());
+	}
+}
+
+void AController_Player::ToggleMenu(const FInputActionValue& Value)
+{
+	if (Character) {
+		bInMenu = !bInMenu;
+		Character->ToggleMenu(bInMenu);
+		bShowMouseCursor = bInMenu;
 	}
 }
