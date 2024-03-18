@@ -32,16 +32,16 @@ public:
 
 	/// -- Inputs --
 	// Called to move the character on the X axis
-	void MoveX(float AxisValue);
+	virtual void MoveX(float AxisValue);
 
 	// Called to move the character on the Y axis
-	void MoveY(float AxisValue);
+	virtual void MoveY(float AxisValue);
 
 	// Called to make the camera jump
 	void StartJump();
 
 	// Called to make the character interact
-	void Interact();
+	virtual void Interact();
 
 	// Called to make the character's camera rotate
 	void RotateCamera(FVector2D AxisValue);
@@ -79,7 +79,7 @@ public:
 	UWidgetInteractionComponent* WidgetInteractionComponent;
 
 
-private:
+protected:
 	/// -- Actives --
 	// Bool denoting if the character can move or not
 	bool bMovementDisabled = false;
@@ -94,6 +94,10 @@ private:
 	/// -- UI --
 	// Pointer to the UI added to the viewport
 	class UInGame_Master* MenuUI = nullptr;
+
+	/// -- Recording and Playback
+	// Float denoting the tick rate of the recording and playback timer
+	float TimerTickRate = 0.1f;
 
 
 };

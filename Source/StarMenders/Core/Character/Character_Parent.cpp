@@ -48,6 +48,10 @@ ACharacter_Parent::ACharacter_Parent()
 void ACharacter_Parent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Get reference to the interact widget class
+	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
+	MenuUI->SetPlayerOwner(this);
 	
 }
 
@@ -56,9 +60,6 @@ void ACharacter_Parent::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Get reference to the interact widget class
-	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
-	MenuUI->SetPlayerOwner(this);
 }
 
 // Called to bind functionality to input

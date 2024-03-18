@@ -57,10 +57,10 @@ void AController_Player::SetupInputComponent()
 }
 
 /// -- Inputs --
-void AController_Player::MoveX(const FInputActionValue& Value)
+void AController_Player::MoveX(const FInputActionInstance& Instance)
 {
 	if (Character) {
-		Character->MoveX(Value.Get<float>());
+		Character->MoveX(Instance.GetValue().Get<float>());
 	}
 }
 

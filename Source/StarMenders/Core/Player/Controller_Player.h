@@ -28,7 +28,7 @@ protected:
 
 	/// -- Inputs --
 	// Called to move the character on the X axis
-	void MoveX(const FInputActionValue& Value);
+	void MoveX(const FInputActionInstance& Instance);
 
 	// Called to move the character on the Y axis
 	void MoveY(const FInputActionValue& Value);
