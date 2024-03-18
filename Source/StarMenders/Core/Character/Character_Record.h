@@ -10,7 +10,7 @@
 
 #include "Character_Record.generated.h"
 
-// Struct holding the data of an input recording
+// Struct holding the data of an input float recording
 USTRUCT(BlueprintType, Category = "Recording")
 struct STARMENDERS_API FRecordingData
 {
@@ -30,6 +30,28 @@ public:
 	FRecordingData();
 	FRecordingData(float NewValue, float NewTick);
 	~FRecordingData();
+};
+
+// Struct holding the data of an input FVector recording
+USTRUCT(BlueprintType, Category = "Recording")
+struct STARMENDERS_API FRecordingDataVector
+{
+public:
+	GENERATED_BODY();
+
+	/// -- Recording Data --
+	// The value of the input at the tick
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recording Data")
+	FVector2D Value;
+
+	// The tick associated with this value
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recording Data")
+	float Tick;
+
+public:
+	FRecordingDataVector();
+	FRecordingDataVector(FVector2D NewValue, float NewTick);
+	~FRecordingDataVector();
 };
 
 UCLASS()
@@ -57,6 +79,18 @@ protected:
 	/// -- Inputs --
 	// MoveX input functions for beginning and ending
 	void RecordMoveX(const FInputActionValue& Value);
+
+	// MoveY input functions for beginning and ending
+	void RecordMoveY(const FInputActionValue& Value);
+
+	// Jump input function
+	void RecordJump();
+
+	// Interact input function
+	void RecordInteract();
+
+	// MoveY input functions for beginning and ending
+	void RecordCamera(const FInputActionValue& Value);
 	
 protected:
 	/// -- Inputs --
@@ -69,6 +103,8 @@ protected:
 	/// -- Input Booleans --
 	// Bool for each input to denote if the input is currently being pressed
 	bool bMoveXActive = false;
+	bool bMoveYActive = false;
+	bool bCameraActive = false;
 
 	/// -- Recording --
 	// Timer handle for the recording tick
@@ -85,10 +121,24 @@ protected:
 
 	// -- RecordedInputs --
 	// TArray storing all recorded MoveX inputs
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
 	TArray<FRecordingData> MoveXRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
+	TArray<FRecordingData> MoveYRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
+	TArray<float> JumpRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
+	TArray<float> InteractRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
+	TArray<FRecordingDataVector> CameraRecording;
 
 private:
 	/// -- Input Value Binds --
 	struct FEnhancedInputActionValueBinding* MoveXBind;
+	struct FEnhancedInputActionValueBinding* MoveYBind;
+	struct FEnhancedInputActionValueBinding* CameraBind;
 };

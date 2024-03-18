@@ -25,6 +25,22 @@ FRecordingData::~FRecordingData()
 
 // -----------------------------------------------
 
+FRecordingDataVector::FRecordingDataVector()
+{
+}
+
+FRecordingDataVector::FRecordingDataVector(FVector2D NewValue, float NewTick)
+{
+	Value = NewValue;
+	Tick = NewTick;
+}
+
+FRecordingDataVector::~FRecordingDataVector()
+{
+}
+
+// ---------------------------------------------------
+
 ACharacter_Record::ACharacter_Record()
 {
 	// Find the input objects
@@ -58,8 +74,16 @@ void ACharacter_Record::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(InputConfig->MoveXInput, ETriggerEvent::Started, this, &ACharacter_Record::RecordMoveX);
 		EnhancedInputComponent->BindAction(InputConfig->MoveXInput, ETriggerEvent::Completed, this, &ACharacter_Record::RecordMoveX);
+		EnhancedInputComponent->BindAction(InputConfig->MoveYInput, ETriggerEvent::Started, this, &ACharacter_Record::RecordMoveY);
+		EnhancedInputComponent->BindAction(InputConfig->MoveYInput, ETriggerEvent::Completed, this, &ACharacter_Record::RecordMoveY);
+		EnhancedInputComponent->BindAction(InputConfig->JumpInput, ETriggerEvent::Started, this, &ACharacter_Record::RecordJump);
+		EnhancedInputComponent->BindAction(InputConfig->InteractInput, ETriggerEvent::Started, this, &ACharacter_Record::RecordInteract);
+		EnhancedInputComponent->BindAction(InputConfig->CameraInput, ETriggerEvent::Started, this, &ACharacter_Record::RecordCamera);
+		EnhancedInputComponent->BindAction(InputConfig->CameraInput, ETriggerEvent::Completed, this, &ACharacter_Record::RecordCamera);
 
 		MoveXBind = &EnhancedInputComponent->BindActionValue(InputConfig->MoveXInput);
+		MoveYBind = &EnhancedInputComponent->BindActionValue(InputConfig->MoveYInput);
+		CameraBind = &EnhancedInputComponent->BindActionValue(InputConfig->CameraInput);
 	}
 }
 
@@ -69,6 +93,14 @@ void ACharacter_Record::RecordingTick()
 	// Record MoveX tick
 	if (bMoveXActive) {
 		MoveXRecording.Add(FRecordingData( MoveXBind->GetValue().Get<float>(), CurrentTickTime));
+	}
+
+	if (bMoveYActive) {
+		MoveYRecording.Add(FRecordingData(MoveYBind->GetValue().Get<float>(), CurrentTickTime));
+	}
+
+	if (bCameraActive) {
+		CameraRecording.Add(FRecordingDataVector(MoveYBind->GetValue().Get<FVector2D>(), CurrentTickTime));
 	}
 
 	// Finally, increment CurrentTickTime
@@ -88,11 +120,41 @@ void ACharacter_Record::RecordMoveX(const FInputActionValue& Value)
 	// If bMoveXActive is true at this stage, the input has been completed
 	if (bMoveXActive) {
 		bMoveXActive = false;
-		UE_LOG(LogTemp, Warning, TEXT("MoveX End"));
 	}
 	else {
 		bMoveXActive = true;
-		UE_LOG(LogTemp, Warning, TEXT("MoveX Start"));
+	}
+}
+
+void ACharacter_Record::RecordMoveY(const FInputActionValue& Value)
+{
+	// Check if this is either the start or end of the input
+	// If bMoveXActive is true at this stage, the input has been completed
+	if (bMoveYActive) {
+		bMoveYActive = false;
+	}
+	else {
+		bMoveYActive = true;
+	}
+}
+
+void ACharacter_Record::RecordJump()
+{
+	JumpRecording.Add(CurrentTickTime);
+}
+
+void ACharacter_Record::RecordInteract()
+{
+	InteractRecording.Add(CurrentTickTime);
+}
+
+void ACharacter_Record::RecordCamera(const FInputActionValue& Value)
+{
+	if (bCameraActive) {
+		bCameraActive = false;
+	}
+	else {
+		bCameraActive = true;
 	}
 }
 
