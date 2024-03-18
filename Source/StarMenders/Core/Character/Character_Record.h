@@ -8,51 +8,9 @@
 #include "InputAction.h"
 #include "Engine/DataAsset.h"
 
+#include "Core/Data/RecordingData.h"
+
 #include "Character_Record.generated.h"
-
-// Struct holding the data of an input float recording
-USTRUCT(BlueprintType, Category = "Recording")
-struct STARMENDERS_API FRecordingData
-{
-public:
-	GENERATED_BODY();
-
-	/// -- Recording Data --
-	// The value of the input at the tick
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recording Data")
-	float Value;
-
-	// The tick associated with this value
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recording Data")
-	float Tick;
-
-public:
-	FRecordingData();
-	FRecordingData(float NewValue, float NewTick);
-	~FRecordingData();
-};
-
-// Struct holding the data of an input FVector recording
-USTRUCT(BlueprintType, Category = "Recording")
-struct STARMENDERS_API FRecordingDataVector
-{
-public:
-	GENERATED_BODY();
-
-	/// -- Recording Data --
-	// The value of the input at the tick
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recording Data")
-	FVector2D Value;
-
-	// The tick associated with this value
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recording Data")
-	float Tick;
-
-public:
-	FRecordingDataVector();
-	FRecordingDataVector(FVector2D NewValue, float NewTick);
-	~FRecordingDataVector();
-};
 
 UCLASS()
 class STARMENDERS_API ACharacter_Record : public ACharacter_Parent
@@ -122,10 +80,10 @@ protected:
 	// -- RecordedInputs --
 	// TArray storing all recorded MoveX inputs
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
-	TArray<FRecordingData> MoveXRecording;
+	TArray<FRecordingDataFloat> MoveXRecording;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
-	TArray<FRecordingData> MoveYRecording;
+	TArray<FRecordingDataFloat> MoveYRecording;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recordings");
 	TArray<float> JumpRecording;

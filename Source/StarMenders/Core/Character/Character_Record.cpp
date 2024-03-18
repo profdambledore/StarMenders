@@ -9,38 +9,6 @@
 
 #include "Core/Inputs/InputConfigData.h"
 
-FRecordingData::FRecordingData()
-{
-}
-
-FRecordingData::FRecordingData(float NewValue, float NewTick)
-{
-	Value = NewValue;
-	Tick = NewTick;
-}
-
-FRecordingData::~FRecordingData()
-{
-}
-
-// -----------------------------------------------
-
-FRecordingDataVector::FRecordingDataVector()
-{
-}
-
-FRecordingDataVector::FRecordingDataVector(FVector2D NewValue, float NewTick)
-{
-	Value = NewValue;
-	Tick = NewTick;
-}
-
-FRecordingDataVector::~FRecordingDataVector()
-{
-}
-
-// ---------------------------------------------------
-
 ACharacter_Record::ACharacter_Record()
 {
 	// Find the input objects
@@ -92,11 +60,11 @@ void ACharacter_Record::RecordingTick()
 	// Record each of the active inputs at this tick
 	// Record MoveX tick
 	if (bMoveXActive) {
-		MoveXRecording.Add(FRecordingData( MoveXBind->GetValue().Get<float>(), CurrentTickTime));
+		MoveXRecording.Add(FRecordingDataFloat( MoveXBind->GetValue().Get<float>(), CurrentTickTime));
 	}
 
 	if (bMoveYActive) {
-		MoveYRecording.Add(FRecordingData(MoveYBind->GetValue().Get<float>(), CurrentTickTime));
+		MoveYRecording.Add(FRecordingDataFloat(MoveYBind->GetValue().Get<float>(), CurrentTickTime));
 	}
 
 	if (bCameraActive) {
