@@ -23,6 +23,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Called to start a recording
+	void StartRecording(class ARecordPad* NewRecordPad);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -65,6 +68,9 @@ protected:
 	bool bCameraActive = false;
 
 	/// -- Recording --
+	// Pointer to the record pad where the recording will be stored
+	ARecordPad* OwningRecordPad = nullptr;
+
 	// Timer handle for the recording tick
 	FTimerHandle RecordingTickHandle;
 
@@ -72,7 +78,7 @@ protected:
 	FTimerHandle RecordingTotalHandle;
 
 	// Float denoting the maximum time allowed to record
-	float MaximumRecordingTime = 60.0f;
+	float MaximumRecordingTime = 5.0f;
 
 	// Float denoting the current tick time
 	float CurrentTickTime = 0.0f;

@@ -9,6 +9,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/BoxComponent.h"
 
+#include "Core/Data/RecordingData.h"
+
 #include "RecordPad.generated.h"
 
 UCLASS()
@@ -25,11 +27,14 @@ public:
 
 	/// -- Recorder Functions --
 	// Called to start a recording on this recording pad
-	void StartRecording();
+	void StartRecording(AController* PlayerController);
 
 	/// -- Recorder Properties --
 	// Called to get if the record pad has a recording
 	bool GetHasRecording();
+
+	// Called to set the recording on this pad
+	void SetRecording(FRecordingData NewRecord, AController* PlayerController);
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,7 +83,10 @@ protected:
 	bool bPlayerOverlapping = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recorder Properties")
-	bool TEMP_RecordPresent = false;
+	bool RecordPresent = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Record")
+	FRecordingData Record;
 
 	/// -- Colour Consts --
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colour Consts")

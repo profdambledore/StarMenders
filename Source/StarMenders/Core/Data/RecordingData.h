@@ -49,3 +49,33 @@ public:
 	FRecordingDataVector(FVector2D NewValue, float NewTick);
 	~FRecordingDataVector();
 };
+
+// Struct holding the data of an recording
+USTRUCT(BlueprintType, Category = "Recording")
+struct STARMENDERS_API FRecordingData
+{
+public:
+	GENERATED_BODY();
+
+	/// -- Recording Data --
+	// TArray storing all recorded MoveX inputs
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recording Data");
+	TArray<FRecordingDataFloat> MoveXRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recording Data");
+	TArray<FRecordingDataFloat> MoveYRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recording Data");
+	TArray<float> JumpRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recording Data");
+	TArray<float> InteractRecording;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recording Data");
+	TArray<FRecordingDataVector> CameraRecording;
+
+public:
+	FRecordingData();
+	FRecordingData(TArray<FRecordingDataFloat> NewMoveXRecording, TArray<FRecordingDataFloat> NewMoveYRecording, TArray<float> NewJumpRecording, TArray<float> NewInteractRecording, TArray<FRecordingDataVector> NewCameraRecording);
+	~FRecordingData();
+};

@@ -34,6 +34,7 @@ void AMechanicObject_Parent::ActivateObject(bool bPositive)
 		TriggerCount++;
 	}
 	else {
+		UE_LOG(LogTemp, Warning, TEXT("- from trigger count"));
 		TriggerCount--;
 	}
 

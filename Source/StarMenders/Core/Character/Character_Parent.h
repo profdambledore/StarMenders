@@ -49,6 +49,9 @@ public:
 	// Called to make the character enter their menu
 	void ToggleMenu(bool bInMenu);
 
+	// Called to make the character interact with their UI element
+	void UIInteract(bool bInMenu);
+
 	/// -- Interaction --
 	// Called to return CurrentRecordPad
 	class ARecordPad* GetCurrentRecordPad();

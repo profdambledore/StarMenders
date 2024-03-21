@@ -39,4 +39,8 @@ public:
 	// Pointer to the interact player input
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement Inputs")
 	class UInputAction* InteractInput = nullptr;
+
+	// Pointer to the UI Left click player input
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement Inputs")
+	class UInputAction* UIInteractInput = nullptr;
 };

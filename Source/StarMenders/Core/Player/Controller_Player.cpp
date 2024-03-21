@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 
 #include "Core/Character/Character_Parent.h"
+#include "Core/Character/Character_Record.h"
 
 #include "Core/Inputs/InputConfigData.h"
 
@@ -25,9 +26,6 @@ AController_Player::AController_Player()
 void AController_Player::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Cast to the character pawn and store it
-	Character = Cast<ACharacter_Parent>(GetPawn());
 }
 
 void AController_Player::SetupInputComponent()
@@ -53,42 +51,75 @@ void AController_Player::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InputConfig->InteractInput, ETriggerEvent::Triggered, this, &AController_Player::Interact);
 		EnhancedInputComponent->BindAction(InputConfig->CameraInput, ETriggerEvent::Triggered, this, &AController_Player::RotateCamera);
 		EnhancedInputComponent->BindAction(InputConfig->MenuInput, ETriggerEvent::Triggered, this, &AController_Player::ToggleMenu);
+		EnhancedInputComponent->BindAction(InputConfig->UIInteractInput, ETriggerEvent::Triggered, this, &AController_Player::UIInteract);
 	}
+}
+
+void AController_Player::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	// Check if the pawn is a Character_Record.  If so, cast and set the pointer to it
+	if (InPawn->IsA(ACharacter_Record::StaticClass())) {
+		RecordingCharacter = Cast<ACharacter_Record>(InPawn);
+		bInMenu = false;
+		bShowMouseCursor = false;
+
+		// Also hide the main character
+		Character->SetActorHiddenInGame(true);
+		Character->SetActorEnableCollision(false);
+	}
+	else if (InPawn->IsA(ACharacter_Parent::StaticClass())){
+		RecordingCharacter = nullptr;
+
+		if (!Character) {
+			// Cast to the character pawn and store it
+			Character = Cast<ACharacter_Parent>(GetPawn());
+		}
+
+		Character->SetActorHiddenInGame(false);
+		Character->SetActorEnableCollision(true);
+	}
+}
+
+void AController_Player::RePossessCharacter()
+{
+	this->Possess(Character);
 }
 
 /// -- Inputs --
 void AController_Player::MoveX(const FInputActionInstance& Instance)
 {
 	if (Character) {
-		Character->MoveX(Instance.GetValue().Get<float>());
+		GetActiveCharacter()->MoveX(Instance.GetValue().Get<float>());
 	}
 }
 
 void AController_Player::MoveY(const FInputActionValue& Value)
 {
 	if (Character) {
-		Character->MoveY(Value.Get<float>());
+		GetActiveCharacter()->MoveY(Value.Get<float>());
 	}
 }
 
 void AController_Player::Jump(const FInputActionValue& Value)
 {
 	if (Character) {
-		Character->StartJump();
+		GetActiveCharacter()->StartJump();
 	}
 }
 
 void AController_Player::Interact(const FInputActionValue& Value)
 {
 	if (Character) {
-		Character->Interact();
+		GetActiveCharacter()->Interact();
 	}
 }
 
 void AController_Player::RotateCamera(const FInputActionValue& Value)
 {
 	if (Character) {
-		Character->RotateCamera(Value.Get<FVector2D>());
+		GetActiveCharacter()->RotateCamera(Value.Get<FVector2D>());
 	}
 }
 
@@ -96,7 +127,22 @@ void AController_Player::ToggleMenu(const FInputActionValue& Value)
 {
 	if (Character) {
 		bInMenu = !bInMenu;
-		Character->ToggleMenu(bInMenu);
+		GetActiveCharacter()->ToggleMenu(bInMenu);
 		bShowMouseCursor = bInMenu;
 	}
+}
+
+void AController_Player::UIInteract(const FInputActionValue& Value)
+{
+	if (Character) {
+		GetActiveCharacter()->UIInteract(bInMenu);
+	}
+}
+
+ACharacter_Parent* AController_Player::GetActiveCharacter()
+{
+	if (RecordingCharacter) {
+		return RecordingCharacter;
+	}
+	return Character;
 }

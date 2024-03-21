@@ -22,6 +22,12 @@ public:
 	// Called to setup the inputs for this player controller
 	virtual void SetupInputComponent() override;
 
+	// Called when 
+	virtual void OnPossess(APawn* InPawn) override;
+
+	// Called to re-possess the original character
+	void RePossessCharacter();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,10 +51,20 @@ protected:
 	// Called to make the character enter their menu
 	void ToggleMenu(const FInputActionValue& Value);
 
+	// Called to make the character interact with their UI component
+	void UIInteract(const FInputActionValue& Value);
+
+private:
+	// Called to return a pointer based on which character this controller is currently possessing
+	class ACharacter_Parent* GetActiveCharacter();
+
 private:
 	/// -- Controlled Character --
 	// Pointer to the character this controller possesses
 	class ACharacter_Parent* Character = nullptr;
+
+	// Pointer to the recording character this controller possesses
+	class ACharacter_Record* RecordingCharacter = nullptr;
 
 	// Bool denoting if the character is in their menu
 	bool bInMenu = false;

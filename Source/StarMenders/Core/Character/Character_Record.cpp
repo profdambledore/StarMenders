@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 
 #include "Core/Inputs/InputConfigData.h"
+#include "Core/Mechanics/RecordPad.h"
 
 ACharacter_Record::ACharacter_Record()
 {
@@ -24,12 +25,6 @@ ACharacter_Record::ACharacter_Record()
 void ACharacter_Record::BeginPlay()
 {
 	Super::BeginPlay();
-
-	CurrentTickTime = 0.0f;
-
-	// Setup two timers for this buff - the buff tick and the total buff duration
-	GetWorld()->GetTimerManager().SetTimer(RecordingTickHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Record::RecordingTick), TimerTickRate, true, TimerTickRate);
-	GetWorld()->GetTimerManager().SetTimer(RecordingTotalHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Record::EndRecording), MaximumRecordingTime, false, MaximumRecordingTime);
 }
 
 void ACharacter_Record::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -53,6 +48,18 @@ void ACharacter_Record::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		MoveYBind = &EnhancedInputComponent->BindActionValue(InputConfig->MoveYInput);
 		CameraBind = &EnhancedInputComponent->BindActionValue(InputConfig->CameraInput);
 	}
+}
+
+
+void ACharacter_Record::StartRecording(ARecordPad* NewRecordPad)
+{
+	OwningRecordPad = NewRecordPad;
+
+	CurrentTickTime = 0.0f;
+
+	// Setup two timers for this buff - the buff tick and the total buff duration
+	GetWorld()->GetTimerManager().SetTimer(RecordingTickHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Record::RecordingTick), TimerTickRate, true, TimerTickRate);
+	GetWorld()->GetTimerManager().SetTimer(RecordingTotalHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Record::EndRecording), MaximumRecordingTime, false, MaximumRecordingTime);
 }
 
 void ACharacter_Record::RecordingTick()
@@ -80,6 +87,12 @@ void ACharacter_Record::EndRecording()
 	// Clear the timer handles
 	GetWorld()->GetTimerManager().ClearTimer(RecordingTickHandle);
 	GetWorld()->GetTimerManager().ClearTimer(RecordingTotalHandle);
+
+	// Pass the recording to the recording pad associated with this recording character
+	OwningRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording), GetController());
+
+	// Then destory this actor
+	Destroy();
 }
 
 void ACharacter_Record::RecordMoveX(const FInputActionValue& Value)

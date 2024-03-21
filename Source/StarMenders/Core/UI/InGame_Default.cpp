@@ -51,6 +51,7 @@ void UInGame_Default::OnPlayButtonHovered()
 
 void UInGame_Default::OnPlayButtonReleased()
 {
+	
 }
 
 void UInGame_Default::OnRecordButtonHovered()
@@ -60,6 +61,12 @@ void UInGame_Default::OnRecordButtonHovered()
 
 void UInGame_Default::OnRecordButtonReleased()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Button Pressed"));
+
+	// Call StartRecord on the assocciated pad
+	if (MasterUI->GetPlayerOwner()->GetCurrentRecordPad()) {
+		MasterUI->GetPlayerOwner()->GetCurrentRecordPad()->StartRecording(MasterUI->GetPlayerOwner()->GetController());
+	}
 }
 
 void UInGame_Default::OnDeleteButtonHovered()

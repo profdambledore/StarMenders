@@ -25,6 +25,7 @@ ACharacter_Parent::ACharacter_Parent()
 	// Setup the MenuWidgetComponent and the WidgetInteractionComponent
 	MenuWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu Widget Component"));
 	MenuWidgetComponent->SetupAttachment(GetMesh(), "");
+	MenuWidgetComponent->SetGenerateOverlapEvents(false);
 
 	WidgetInteractionComponent = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Widget Interaction Component"));
 	WidgetInteractionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
@@ -149,6 +150,14 @@ void ACharacter_Parent::ToggleMenu(bool bInMenu)
 {
 	MenuWidgetComponent->SetVisibility(bInMenu);
 	bMovementDisabled = bInMenu;
+}
+
+void ACharacter_Parent::UIInteract(bool bInMenu)
+{
+	if (bInMenu) {
+		WidgetInteractionComponent->PressPointerKey(EKeys::LeftMouseButton);
+		WidgetInteractionComponent->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
 }
 
 ARecordPad* ACharacter_Parent::GetCurrentRecordPad()
