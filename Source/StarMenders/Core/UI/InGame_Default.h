@@ -21,6 +21,8 @@ public:
 
 	virtual void SynchronizeProperties() override;
 
+	void SetupState();
+
 protected:
 	/// -- Recording Functions --
 	// Button Binds
@@ -85,6 +87,8 @@ public:
 	/// -- Pointers--
 	// Pointer to the master UI that this state is contained in
 	class UInGame_Master* MasterUI = nullptr;
+
+	class ACharacter_Default* DefaultCharacter = nullptr;
 
 protected:
 	// TMap of <int / FString> to change what the RecordingText shows

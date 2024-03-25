@@ -26,6 +26,9 @@ public:
 	// Called to start a recording
 	void StartRecording(class ARecordPad* NewRecordPad);
 
+	// Timer event for the total duration of the recording
+	void EndRecording();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,9 +36,6 @@ protected:
 	/// -- Recording Tick Timers --
 	// Timer event for each tick of the recording
 	void RecordingTick();
-
-	// Timer event for the total duration of the recording
-	void EndRecording();
 
 	/// -- Inputs --
 	// MoveX input functions for beginning and ending

@@ -52,8 +52,7 @@ void ACharacter_Parent::BeginPlay()
 
 	// Get reference to the interact widget class
 	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
-	MenuUI->SetPlayerOwner(this);
-	
+	MenuUI->SetPlayerOwner(this);	
 }
 
 // Called every frame
@@ -159,14 +158,3 @@ void ACharacter_Parent::UIInteract(bool bInMenu)
 		WidgetInteractionComponent->ReleasePointerKey(EKeys::LeftMouseButton);
 	}
 }
-
-ARecordPad* ACharacter_Parent::GetCurrentRecordPad()
-{
-	return CurrentRecordPad;
-}
-
-void ACharacter_Parent::SetCurrentRecordPad(ARecordPad* NewRecordPad)
-{
-	CurrentRecordPad = NewRecordPad;
-}
-

@@ -9,6 +9,8 @@
 
 #include "Core/Inputs/InputConfigData.h"
 #include "Core/Mechanics/RecordPad.h"
+#include "Core/UI/InGame_Master.h"
+#include "Core/UI/InGame_Recording.h"
 
 ACharacter_Record::ACharacter_Record()
 {
@@ -25,6 +27,8 @@ ACharacter_Record::ACharacter_Record()
 void ACharacter_Record::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MenuUI->UpdateActiveState("Recording");
 }
 
 void ACharacter_Record::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -80,6 +84,8 @@ void ACharacter_Record::RecordingTick()
 
 	// Finally, increment CurrentTickTime
 	CurrentTickTime += TimerTickRate;
+
+	MenuUI->RecordState->UpdateRemainingTime(MaximumRecordingTime - CurrentTickTime);
 }
 
 void ACharacter_Record::EndRecording()

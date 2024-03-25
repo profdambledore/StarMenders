@@ -36,6 +36,9 @@ public:
 	// Called to set the recording on this pad
 	void SetRecording(FRecordingData NewRecord, AController* PlayerController);
 
+	// Called to clear the recording on the pad
+	void ClearRecording();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -75,6 +78,10 @@ public:
 
 protected:
 	/// -- Recorder Properties --
+	// Pointer to the recording character class blueprint
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recorder Properties")
+	TSubclassOf<class ACharacter_Record> RecordingCharacterClass = nullptr;
+
 	// Int to denote the recorder's index
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recorder Properties")
 	int RecorderIndex = 0;
@@ -82,16 +89,15 @@ protected:
 	// Bool to denote if the player is overlapping with this recorder
 	bool bPlayerOverlapping = false;
 
+	// Bool to denote if a record exists
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recorder Properties")
 	bool RecordPresent = false;
 
+	// Record struct holding all data about the record
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Record")
 	FRecordingData Record;
 
 	/// -- Colour Consts --
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colour Consts")
 	TMap<int, FColor> ColourConsts;
-
-
-
 };

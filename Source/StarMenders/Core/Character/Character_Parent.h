@@ -52,13 +52,6 @@ public:
 	// Called to make the character interact with their UI element
 	void UIInteract(bool bInMenu);
 
-	/// -- Interaction --
-	// Called to return CurrentRecordPad
-	class ARecordPad* GetCurrentRecordPad();
-
-	// Called to set the CurrentRecordPad
-	void SetCurrentRecordPad(class ARecordPad* NewRecordPad);
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -81,14 +74,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UWidgetInteractionComponent* WidgetInteractionComponent;
 
-
 protected:
 	/// -- Actives --
 	// Bool denoting if the character can move or not
 	bool bMovementDisabled = false;
-
-	// Pointer to the record pad currently being accessed
-	class ARecordPad* CurrentRecordPad = nullptr;
 
 	/// -- Component Data --
 	// Float denoting the character's pick up spring arm

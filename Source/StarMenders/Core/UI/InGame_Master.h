@@ -24,6 +24,9 @@ public:
 	// Called to set the owning player pointer
 	void SetPlayerOwner(class ACharacter_Parent* NewOwner);
 
+	// Called to update the active state
+	void UpdateActiveState(FString InState);
+
 	// Called to get the owning player pointer
 	class ACharacter_Parent* GetPlayerOwner();
 
@@ -38,6 +41,9 @@ public:
 	// State
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Global Components")
 	class UInGame_Default* DefaultState = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Global Components")
+	class UInGame_Recording* RecordState = nullptr;
 
 protected:
 	// Pointer to the Character that owns this UserWidget

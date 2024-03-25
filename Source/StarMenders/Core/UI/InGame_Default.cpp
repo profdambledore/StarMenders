@@ -4,6 +4,7 @@
 
 #include "Core/UI/InGame_Master.h"
 #include "Core/Character/Character_Parent.h"
+#include "Core/Character/Character_Default.h"
 #include "Core/Mechanics/RecordPad.h"
 
 void UInGame_Default::NativeConstruct()
@@ -33,10 +34,15 @@ void UInGame_Default::SynchronizeProperties()
 	Super::SynchronizeProperties();
 }
 
+void UInGame_Default::SetupState()
+{
+	DefaultCharacter = Cast<ACharacter_Default>(MasterUI->GetPlayerOwner());
+}
+
 void UInGame_Default::OnPlayButtonHovered()
 {
-	if (MasterUI->GetPlayerOwner()->GetCurrentRecordPad()) {
-		if (MasterUI->GetPlayerOwner()->GetCurrentRecordPad()->GetHasRecording()) {
+	if (DefaultCharacter->GetCurrentRecordPad()) {
+		if (DefaultCharacter->GetCurrentRecordPad()->GetHasRecording()) {
 			UpdateRecordingText(1);
 		}
 		else {
@@ -64,15 +70,16 @@ void UInGame_Default::OnRecordButtonReleased()
 	UE_LOG(LogTemp, Warning, TEXT("Button Pressed"));
 
 	// Call StartRecord on the assocciated pad
-	if (MasterUI->GetPlayerOwner()->GetCurrentRecordPad()) {
-		MasterUI->GetPlayerOwner()->GetCurrentRecordPad()->StartRecording(MasterUI->GetPlayerOwner()->GetController());
+	if (DefaultCharacter->GetCurrentRecordPad()) {
+		DefaultCharacter->GetCurrentRecordPad()->ClearRecording();
+		DefaultCharacter->GetCurrentRecordPad()->StartRecording(MasterUI->GetPlayerOwner()->GetController());
 	}
 }
 
 void UInGame_Default::OnDeleteButtonHovered()
 {
-	if (MasterUI->GetPlayerOwner()->GetCurrentRecordPad()) {
-		if (MasterUI->GetPlayerOwner()->GetCurrentRecordPad()->GetHasRecording()) {
+	if (DefaultCharacter->GetCurrentRecordPad()) {
+		if (DefaultCharacter->GetCurrentRecordPad()->GetHasRecording()) {
 			UpdateRecordingText(4);
 		}
 		else {
@@ -86,6 +93,11 @@ void UInGame_Default::OnDeleteButtonHovered()
 
 void UInGame_Default::OnDeleteButtonReleased()
 {
+	// Call StartRecord on the assocciated pad
+	if (DefaultCharacter) {
+		UpdateRecordingText(5);
+		DefaultCharacter->GetCurrentRecordPad()->ClearRecording();
+	}
 }
 
 void UInGame_Default::OnAllButtonUnhovered()

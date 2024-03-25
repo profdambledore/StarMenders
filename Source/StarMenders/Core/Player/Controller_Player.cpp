@@ -63,6 +63,7 @@ void AController_Player::OnPossess(APawn* InPawn)
 	if (InPawn->IsA(ACharacter_Record::StaticClass())) {
 		RecordingCharacter = Cast<ACharacter_Record>(InPawn);
 		bInMenu = false;
+		GetActiveCharacter()->ToggleMenu(bInMenu);
 		bShowMouseCursor = false;
 
 		// Also hide the main character
@@ -76,6 +77,10 @@ void AController_Player::OnPossess(APawn* InPawn)
 			// Cast to the character pawn and store it
 			Character = Cast<ACharacter_Parent>(GetPawn());
 		}
+
+		bInMenu = false;
+		GetActiveCharacter()->ToggleMenu(bInMenu);
+		bShowMouseCursor = bInMenu;		
 
 		Character->SetActorHiddenInGame(false);
 		Character->SetActorEnableCollision(true);

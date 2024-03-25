@@ -4,7 +4,7 @@
 #include "Core/Mechanics/RecordPad.h"
 
 #include "Core/Character/Character_Record.h"
-#include "Core/Character/Character_Parent.h"
+#include "Core/Character/Character_Default.h"
 #include "Core/Level/LevelController.h"
 #include "Core/Player/Controller_Player.h"
 
@@ -61,7 +61,7 @@ void ARecordPad::StartRecording(AController* PlayerController)
 {
 	if (PlayerController) {
 		// Spawn a Character_Record
-		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(ACharacter_Record::StaticClass(), FVector(), FRotator());
+		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(RecordingCharacterClass, FVector(), FRotator());
 		RecordingCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 95.0f));
 
 		// Them make the inputted PlayerController possess this new character
@@ -74,18 +74,18 @@ void ARecordPad::StartRecording(AController* PlayerController)
 
 void ARecordPad::OnRecorderBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA(ACharacter_Parent::StaticClass())) {
+	if (OtherActor->IsA(ACharacter_Default::StaticClass())) {
 		bPlayerOverlapping = true;
-		Cast<ACharacter_Parent>(OtherActor)->SetCurrentRecordPad(this);
+		Cast<ACharacter_Default>(OtherActor)->SetCurrentRecordPad(this);
 		ToggleHologramVisibility();
 	}
 }
 
 void ARecordPad::OnRecorderEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor->IsA(ACharacter_Parent::StaticClass())) {
+	if (OtherActor->IsA(ACharacter_Default::StaticClass())) {
 		bPlayerOverlapping = false;
-		Cast<ACharacter_Parent>(OtherActor)->SetCurrentRecordPad(nullptr);
+		Cast<ACharacter_Default>(OtherActor)->SetCurrentRecordPad(nullptr);
 		ToggleHologramVisibility();
 	}
 }
@@ -114,4 +114,10 @@ void ARecordPad::SetRecording(FRecordingData NewRecord, AController* PlayerContr
 	AController_Player* PC = Cast<AController_Player>(PlayerController);
 	PC->RePossessCharacter();
 	PC->GetPawn()->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 95.0f));
+}
+
+void ARecordPad::ClearRecording()
+{
+	Record = FRecordingData();
+	RecordPresent = false;
 }
