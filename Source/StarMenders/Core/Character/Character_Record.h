@@ -78,7 +78,7 @@ protected:
 	FTimerHandle RecordingTotalHandle;
 
 	// Float denoting the maximum time allowed to record
-	float MaximumRecordingTime = 5.0f;
+	float MaximumRecordingTime = 60.0f;
 
 	// Float denoting the current tick time
 	float CurrentTickTime = 0.0f;

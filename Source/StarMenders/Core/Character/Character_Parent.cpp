@@ -115,7 +115,7 @@ void ACharacter_Parent::Interact()
 		TraceParams.AddIgnoredActor(this);
 
 		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, FirstPersonCamera->GetComponentLocation(), FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), ECC_WorldDynamic, TraceParams);
-		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), FColor::White, true, 5, 0, 5);
+		DrawDebugLine(GetWorld(), FirstPersonCamera->GetComponentLocation(), FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), FColor::White, true, 5, 0, 5);
 		// Check if the object hit has a tag of "CanBePickedUp"
 		if (TraceHit.GetActor()) {
 			if (TraceHit.GetActor()->ActorHasTag(FName("CanBePickedUp"))) {
@@ -134,6 +134,8 @@ void ACharacter_Parent::Interact()
 void ACharacter_Parent::RotateCamera(FVector2D AxisValue)
 {
 	if (!bMovementDisabled) {
+		UE_LOG(LogTemp, Warning, TEXT("Rotate = %f / %f"), AxisValue.X, AxisValue.Y);
+
 		// Rotate on the X axis based on the input's axis value
 		AddControllerYawInput(AxisValue.X);
 		AddControllerPitchInput(AxisValue.Y);

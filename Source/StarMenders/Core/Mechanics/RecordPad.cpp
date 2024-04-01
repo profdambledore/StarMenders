@@ -4,6 +4,7 @@
 #include "Core/Mechanics/RecordPad.h"
 
 #include "Core/Character/Character_Record.h"
+#include "Core/Character/Character_Playback.h"
 #include "Core/Character/Character_Default.h"
 #include "Core/Level/LevelController.h"
 #include "Core/Player/Controller_Player.h"
@@ -57,21 +58,6 @@ void ARecordPad::Tick(float DeltaTime)
 
 }
 
-void ARecordPad::StartRecording(AController* PlayerController)
-{
-	if (PlayerController) {
-		// Spawn a Character_Record
-		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(RecordingCharacterClass, FVector(), FRotator());
-		RecordingCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 95.0f));
-
-		// Them make the inputted PlayerController possess this new character
-		PlayerController->Possess(RecordingCharacter);
-
-		// Finally, setup the character and start it's timer
-		RecordingCharacter->StartRecording(this);
-	}
-}
-
 void ARecordPad::OnRecorderBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->IsA(ACharacter_Default::StaticClass())) {
@@ -90,9 +76,32 @@ void ARecordPad::OnRecorderEndOverlap(UPrimitiveComponent* OverlappedComp, AActo
 	}
 }
 
+void ARecordPad::StartRecording(AController* PlayerController)
+{
+	ClearRecording();
+
+	if (PlayerController) {
+		// Spawn a Character_Record
+		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(RecordingCharacterClass, FVector(), GetActorRotation());
+		RecordingCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 96.0f));
+
+		// Them make the inputted PlayerController possess this new character
+		PlayerController->Possess(RecordingCharacter);
+
+		// Finally, setup the character and start it's timer
+		RecordingCharacter->StartRecording(this);
+	}
+}
+
+void ARecordPad::ClearRecording()
+{
+	Record = FRecordingData();
+	RecordPresent = false;
+}
+
 void ARecordPad::ToggleHologramVisibility()
 {
-	if (!bPlayerOverlapping && RecordPresent) {
+	if (!bPlayerOverlapping && RecordPresent && !CurrentCharacter) {
 		RecorderCharacterHologram->SetVisibility(true, false);
 	}
 	else {
@@ -116,8 +125,26 @@ void ARecordPad::SetRecording(FRecordingData NewRecord, AController* PlayerContr
 	PC->GetPawn()->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 95.0f));
 }
 
-void ARecordPad::ClearRecording()
+void ARecordPad::StartPlayback()
 {
-	Record = FRecordingData();
-	RecordPresent = false;
+	if (RecordPresent) {
+		// Spawn a Character_Playback
+		ACharacter_Playback* PlaybackCharacter = GetWorld()->SpawnActor<ACharacter_Playback>(PlaybackCharacterClass, FVector(), GetActorRotation());
+		PlaybackCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 96.0f));
+		CurrentCharacter = PlaybackCharacter;
+
+		ToggleHologramVisibility();
+
+		// Pass the record to the new character and play
+		PlaybackCharacter->SetupPlayback(Record);
+	}
+}
+
+void ARecordPad::EndPlayback()
+{
+	if (CurrentCharacter) {
+		CurrentCharacter->Destroy();
+
+		ToggleHologramVisibility();
+	}
 }

@@ -3,6 +3,7 @@
 
 #include "Core/Character/Character_Record.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -11,6 +12,7 @@
 #include "Core/Mechanics/RecordPad.h"
 #include "Core/UI/InGame_Master.h"
 #include "Core/UI/InGame_Recording.h"
+#include "Core/Level/LevelController.h"
 
 ACharacter_Record::ACharacter_Record()
 {
@@ -61,7 +63,7 @@ void ACharacter_Record::StartRecording(ARecordPad* NewRecordPad)
 
 	CurrentTickTime = 0.0f;
 
-	// Setup two timers for this buff - the buff tick and the total buff duration
+	// Setup two timers for this character - the recording tick and the total buff duration
 	GetWorld()->GetTimerManager().SetTimer(RecordingTickHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Record::RecordingTick), TimerTickRate, true, TimerTickRate);
 	GetWorld()->GetTimerManager().SetTimer(RecordingTotalHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Record::EndRecording), MaximumRecordingTime, false, MaximumRecordingTime);
 }
@@ -79,7 +81,7 @@ void ACharacter_Record::RecordingTick()
 	}
 
 	if (bCameraActive) {
-		CameraRecording.Add(FRecordingDataVector(MoveYBind->GetValue().Get<FVector2D>(), CurrentTickTime));
+		CameraRecording.Add(FRecordingDataVector(FVector2D(GetControlRotation().Pitch, GetControlRotation().Yaw), CurrentTickTime));
 	}
 
 	// Finally, increment CurrentTickTime
@@ -96,6 +98,9 @@ void ACharacter_Record::EndRecording()
 
 	// Pass the recording to the recording pad associated with this recording character
 	OwningRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording), GetController());
+
+	// Call  on the LevelController
+	Cast<ALevelController>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelController::StaticClass()))->EndLevelPlayback();
 
 	// Then destory this actor
 	Destroy();

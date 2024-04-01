@@ -33,6 +33,28 @@ void ALevelController::Tick(float DeltaTime)
 
 }
 
-void ALevelController::UpdatePlayerUIElements(ARecordPad* RecordPadOverlapping)
+void ALevelController::SetupLevel()
 {
+	// Find all record pads 
+}
+
+void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Parent* Character)
+{
+	// Check each stored record pad pointer matches the pointer inputted.  If so, start recording on that pad
+	// Else, start that pads playback
+	for (ARecordPad* i : RecordPads) {
+		if (i == PadToRecordOn) {
+			i->StartRecording(Character->GetController());
+		}
+		else {
+			i->StartPlayback();
+		}
+	}
+}
+
+void ALevelController::EndLevelPlayback()
+{
+	for (ARecordPad* i : RecordPads) {
+		i->EndPlayback();
+	}
 }

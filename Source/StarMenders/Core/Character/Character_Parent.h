@@ -44,7 +44,7 @@ public:
 	virtual void Interact();
 
 	// Called to make the character's camera rotate
-	void RotateCamera(FVector2D AxisValue);
+	virtual void RotateCamera(FVector2D AxisValue);
 
 	// Called to make the character enter their menu
 	void ToggleMenu(bool bInMenu);
@@ -89,7 +89,7 @@ protected:
 
 	/// -- Recording and Playback
 	// Float denoting the tick rate of the recording and playback timer
-	float TimerTickRate = 0.1f;
+	float TimerTickRate = 0.0005f;
 
 
 };

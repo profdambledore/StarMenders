@@ -25,19 +25,26 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	/// -- Recorder Functions --
+	/// -- Recording Functions --
 	// Called to start a recording on this recording pad
 	void StartRecording(AController* PlayerController);
 
-	/// -- Recorder Properties --
+	// Called to clear the recording on the pad
+	void ClearRecording();
+
+	/// -- Record Properties --
 	// Called to get if the record pad has a recording
 	bool GetHasRecording();
 
 	// Called to set the recording on this pad
 	void SetRecording(FRecordingData NewRecord, AController* PlayerController);
 
-	// Called to clear the recording on the pad
-	void ClearRecording();
+	/// -- Playback Functions --
+	// Called to start the playback of the recording (if one exists)
+	void StartPlayback();
+	
+	// Called to end the playback of the recording
+	void EndPlayback();
 
 protected:
 	// Called when the game starts or when spawned
@@ -77,21 +84,29 @@ public:
 	UBoxComponent* RecorderTriggerZone = nullptr;
 
 protected:
-	/// -- Recorder Properties --
+	/// -- Character Properties --
 	// Pointer to the recording character class blueprint
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recorder Properties")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character Properties")
 	TSubclassOf<class ACharacter_Record> RecordingCharacterClass = nullptr;
 
+	// Pointer to the playback character class blueprint
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character Properties")
+	TSubclassOf<class ACharacter_Playback> PlaybackCharacterClass = nullptr;
+
+	/// -- Actives --
 	// Int to denote the recorder's index
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recorder Properties")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actives")
 	int RecorderIndex = 0;
 
 	// Bool to denote if the player is overlapping with this recorder
 	bool bPlayerOverlapping = false;
 
 	// Bool to denote if a record exists
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recorder Properties")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actives")
 	bool RecordPresent = false;
+
+	// Pointer to the current spawned character associated with this pad
+	class ACharacter_Parent* CurrentCharacter = nullptr;
 
 	// Record struct holding all data about the record
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Record")

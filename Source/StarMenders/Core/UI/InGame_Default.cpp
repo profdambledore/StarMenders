@@ -2,10 +2,13 @@
 
 #include "Core/UI/InGame_Default.h"
 
+#include "Kismet/GameplayStatics.h"
+
 #include "Core/UI/InGame_Master.h"
 #include "Core/Character/Character_Parent.h"
 #include "Core/Character/Character_Default.h"
 #include "Core/Mechanics/RecordPad.h"
+#include "Core/Level/LevelController.h"
 
 void UInGame_Default::NativeConstruct()
 {
@@ -71,8 +74,8 @@ void UInGame_Default::OnRecordButtonReleased()
 
 	// Call StartRecord on the assocciated pad
 	if (DefaultCharacter->GetCurrentRecordPad()) {
-		DefaultCharacter->GetCurrentRecordPad()->ClearRecording();
-		DefaultCharacter->GetCurrentRecordPad()->StartRecording(MasterUI->GetPlayerOwner()->GetController());
+		// Find the LevelController in the world
+		Cast<ALevelController>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelController::StaticClass()))->StartLevelPlayback(DefaultCharacter->GetCurrentRecordPad(), DefaultCharacter);
 	}
 }
 

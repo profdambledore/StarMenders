@@ -18,10 +18,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/// -- Setup --
+	// Called to setup a new level
+	void SetupLevel();
+
 	/// -- Recording and Playing --
-	// Called to update the Player's UI with the information about a record pad
-	// Will be cleared if RecordPadOverlapping is nullptr
-	void UpdatePlayerUIElements(class ARecordPad* RecordPadOverlapping);
+	// Called to start playback of a level and record on a selected pad
+	void StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Parent* Character);
+
+	// Called to end the playback of a level
+	void EndLevelPlayback();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,9 +38,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* Root = nullptr;
 
-private:
 	/// -- Pointers --
 	// Pointer to the player's character
 	class ACharacter_Parent* Player = nullptr;
+
+	// Pointer array to all RecordPads
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
+	TArray<class ARecordPad*> RecordPads;
+
+private:
 
 };
