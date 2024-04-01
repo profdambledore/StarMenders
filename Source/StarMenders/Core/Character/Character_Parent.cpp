@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 
+#include "Core/Mechanics/Mechanic_WorldObject.h"
+
 #include "Core/UI/InGame_Master.h"
 
 // Sets default values
@@ -119,13 +121,21 @@ void ACharacter_Parent::Interact()
 		// Check if the object hit has a tag of "CanBePickedUp"
 		if (TraceHit.GetActor()) {
 			if (TraceHit.GetActor()->ActorHasTag(FName("CanBePickedUp"))) {
-				UE_LOG(LogTemp, Warning, TEXT("Object hit = %s"), *TraceHit.GetActor()->GetName());
+				// Next, check if the object is currently being grabbed.
+				// Cast to the WorldObject, call GetCurrentGrabber and release the object from the grabber if not nullptr
+				AMechanic_WorldObject* CG = Cast<AMechanic_WorldObject>(TraceHit.GetActor());
+				if (CG->GetCurrentGrabber()) {
+					CG->GetCurrentGrabber()->ObjectPhysicsHandle->ReleaseComponent();
+				}
 				// If so, grab the actor via the ObjectPhysicsHandle
 				// Calculate the object's component bounds to grab it in the center of the object
 				FVector BoxExtents;
 				BoxExtents = TraceHit.GetComponent()->GetLocalBounds().BoxExtent;
 				BoxExtents = BoxExtents / 6;
 				ObjectPhysicsHandle->GrabComponentAtLocationWithRotation(TraceHit.GetComponent(), "", TraceHit.GetComponent()->GetComponentLocation() + BoxExtents, TraceHit.GetComponent()->GetComponentRotation());
+
+				// Finally, update the WorldObject's CurrentGrabber with this character
+				CG->SetCurrentGrabber(this);
 			}
 		}
 	}
