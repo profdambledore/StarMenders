@@ -144,7 +144,7 @@ void ACharacter_Parent::Interact()
 void ACharacter_Parent::RotateCamera(FVector2D AxisValue)
 {
 	if (!bMovementDisabled) {
-		UE_LOG(LogTemp, Warning, TEXT("Rotate = %f / %f"), AxisValue.X, AxisValue.Y);
+		//UE_LOG(LogTemp, Warning, TEXT("Rotate = %f / %f"), AxisValue.X, AxisValue.Y);
 
 		// Rotate on the X axis based on the input's axis value
 		AddControllerYawInput(AxisValue.X);
