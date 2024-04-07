@@ -46,6 +46,11 @@ public:
 	// Called to end the playback of the recording
 	void EndPlayback();
 
+	/// -- Setup Functions --
+	// Called to setup the visual elements of the record pad
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetupVisualElements(int Index);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -60,11 +65,6 @@ protected:
 	/// -- Hologram Funtion --
 	// Called to modify if the hologram should be shown or not
 	void ToggleHologramVisibility();
-
-	/// -- Setup Functions --
-	// Called to setup the visual elements of the record pad
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetupVisualElements();
 
 public:	
 	/// -- Components --

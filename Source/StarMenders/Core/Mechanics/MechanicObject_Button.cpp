@@ -113,4 +113,3 @@ void AMechanicObject_Button::ActivateObject(bool bPositive)
 		ObjectState = EObjectState::Off;
 	}
 }
-

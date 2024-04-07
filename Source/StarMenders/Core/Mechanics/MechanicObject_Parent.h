@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BlueprintTestFunction();
 
+	// Called to reset this object to it's default state
+	virtual void ResetToDefault();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,11 +57,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* Root = nullptr;
 
-	/// -- Mechanic Properties --
+	/// -- Mechanic Properties - Details --
 	// FString denoting the objects name
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Properties")
 	FString ObjectName;
 
+	/// -- Mechanic Properties - Actives --
 	// Boolean denoting if the mechanic is active or not
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Properties")
 	bool bActive = false;

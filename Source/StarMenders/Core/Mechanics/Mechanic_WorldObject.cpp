@@ -9,10 +9,10 @@
 AMechanic_WorldObject::AMechanic_WorldObject()
 {
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	SetRootComponent(Root);
+	//SetRootComponent(Root);
 
 	ObjectMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Object Mesh"));
-	ObjectMesh->SetupAttachment(Root, "");
+	SetRootComponent(ObjectMesh);
 
 	// Setup the character's gameplay tags
 	Tags.Add("CanActivateButtons"); // Allows the character to activate buttons

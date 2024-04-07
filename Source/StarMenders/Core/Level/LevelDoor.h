@@ -33,6 +33,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Called to set the door to either closed or open
+	void SetDoorState(bool bSetToClosed);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetupPairedDoor(ALevelDoor* DoorToPair, AActor* ActorToClip = nullptr);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -59,3 +59,7 @@ void AMechanicObject_Parent::EndTrigger()
 {
 	bActive = false;
 }
+
+void AMechanicObject_Parent::ResetToDefault()
+{
+}

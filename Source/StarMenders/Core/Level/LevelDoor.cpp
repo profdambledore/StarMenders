@@ -71,30 +71,6 @@ void ALevelDoor::Tick(float DeltaTime)
 
 	// First, check if the door is open
 	if (bDoorOpen && PairedDoor) {
-		/// Original experimentation with DotProd, worked on rotation but didnt look 100% correct
-		// Calculate the angle
-		// If so, then get the player's forward vector and normalize it
-		//FVector VecA = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorForwardVector();
-		//VecA.Normalize();
-
-		// Next, get the door's forward vector and normalize it
-		//FVector VecB = GetActorForwardVector();
-		//VecB.Normalize();
-
-		// Calcualate the dot product between the two vectors and convert it back to degrees
-		//float OutAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(VecA, VecB)));
-
-		// Calculate the cross product of the angle
-		//if (FVector::CrossProduct(VecA, VecB).Z > 0)
-		//{
-			//OutAngle = -OutAngle;
-		//}
-
-		// Finally, add the doors actual rotation and update the angle of the spring arm
-		//OutAngle = OutAngle + GetActorRotation().Yaw;
-		//PairedDoor->CaptureCamera->SetWorldRotation(FRotator(0.0f, OutAngle + GetActorRotation().Yaw, 0.0f));
-
-		/// Second Experimentation
 		//https://www.youtube.com/watch?v=6BT-Ux56KBs&list=PLlYisyZ--cm_wsMGpy2C9Ewwm--jsv5Cm&index=1 
 		// Caluclate the distance 
 		FTransform TF = GetActorTransform();
@@ -112,7 +88,11 @@ void ALevelDoor::Tick(float DeltaTime)
 		}
 	};
 
-};
+}
+void ALevelDoor::SetDoorState(bool bSetToClosed)
+{
+	bDoorOpen = bSetToClosed;
+}
 
 void ALevelDoor::UpdateClipPlane()
 {
@@ -143,7 +123,6 @@ bool ALevelDoor::GetIsCrossingPortal(FVector PointToCheck, FVector PortalLocatio
 {
 	// Check if the distance of the portal's normal is greater than or equal too the distance between the point to check and the portal's location
 	bool bIsInFront = FVector::DotProduct(PortalNormal, PointToCheck - PortalLocation) >= 0.0f;
-	//UE_LOG(LogTemp, Warning, TEXT("Bool: %s"), bIsInFront ? TEXT("true") : TEXT("false"));
 
 	// Next, make a plane from the portal location and the normal (the direction of the portal)
 	// And use the plane to calculate if the point is intersecting the portal
@@ -171,9 +150,9 @@ void ALevelDoor::TeleportCharacter(AActor* CharacterToTeleport)
 	Char->GetController()->SetControlRotation(GetInverseRotation(Char->GetController()->GetControlRotation()));
 
 	// Now update Char's velocity
-	FVector Vel = Char->GetMovementComponent()->Velocity; Vel.Normalize(0.001);
-	FVector CIT = Char->GetActorTransform().InverseTransformVector(Vel);
-	FVector OutVel = PairedDoor->GetActorTransform().TransformVector(CIT.MirrorByVector(FVector(1.0f, 0.0f, 0.0f)).MirrorByVector(FVector(0.0f, 1.0f, 0.0f)));
+	FVector Vel = Char->GetMovementComponent()->Velocity; Vel.Normalize(0.0001);
+	FVector CIT = UKismetMathLibrary::InverseTransformDirection(GetActorTransform(), Vel);
+	FVector OutVel = UKismetMathLibrary::TransformDirection(PairedDoor->GetActorTransform(), CIT.MirrorByVector(FVector(1.0f, 0.0f, 0.0f)).MirrorByVector(FVector(0.0f, 1.0f, 0.0f)));
 	Char->GetMovementComponent()->Velocity = OutVel * Char->GetMovementComponent()->Velocity.Length();
 }
 

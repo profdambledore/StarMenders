@@ -42,7 +42,7 @@ void ARecordPad::BeginPlay()
 	// Update the state of the Hologram
 	ToggleHologramVisibility();
 
-	SetupVisualElements();
+	SetupVisualElements(RecorderIndex);
 
 	// Add the overlap events to the ButtonTriggerZone
 	// Add Overlap Events
