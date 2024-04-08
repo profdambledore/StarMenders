@@ -7,6 +7,8 @@
 
 #include "Core/Data/LevelData.h"
 
+#include "Components/StaticMeshComponent.h"
+
 #include "LevelController.generated.h"
 
 UCLASS()
@@ -44,27 +46,48 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* Root = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UStaticMeshComponent* LevelMesh = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Testing")
 	FName LevelID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Testing")
+	FVector WorldLocationOffset;
 
 	/// -- Pointers --
 	// Pointer to the player's character
 	class ACharacter_Parent* Player = nullptr;
 
+	/// -- Portal Doors --
 	// Pointer to the ship door
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portals")
 	class ALevelDoor* ShipDoor = nullptr;
 
 	// Pointer to the hidden ship door
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portals")
 	class ALevelDoor* HiddenShipDoor = nullptr;
 
+	// Pointer to the entrance level door
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portals")
+	class ALevelDoor* EntranceDoor = nullptr;
+
+	// Pointer to the entrance level door
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portals")
+	class ALevelDoor* ExitDoor = nullptr;
+
+	/// -- Level Assets --
 	// Pointer array to all RecordPads
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
 	TArray<class ARecordPad*> RecordPads;
 
-	// Pointer to the Parent_Room
-	class ARoom_Parent* ActiveRoom = nullptr;
+	// Pointer map to all Mechanic Objects
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
+	TArray<class AMechanicObject_Parent*> Mechanics;
+
+	// -- Classes --
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Classes")
+	TSubclassOf<class ARecordPad> RecordPadClass;
 
 protected:
 	// Data Table of all levels

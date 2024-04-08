@@ -8,6 +8,58 @@
 
 #include "LevelData.generated.h"
 
+USTRUCT(BlueprintType, Category = "Levels")
+struct STARMENDERS_API FRecordPadData
+{
+public:
+	GENERATED_BODY();
+
+	// The index of this record pad
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record Pad Data")
+	int Index = -1;
+
+	// The transform of the record pad
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record Pad Data")
+	FTransform Transform;
+
+public:
+	FRecordPadData();
+	~FRecordPadData();
+};
+
+USTRUCT(BlueprintType, Category = "Levels")
+struct STARMENDERS_API FMechanicData
+{
+public:
+	GENERATED_BODY();
+
+	// The ID of this mechanic
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	FName ID;
+
+	// The transform of the mechanic
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	FTransform Transform;
+
+	// The class of the mechanic object
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TSubclassOf<class AMechanicObject_Parent> Class;
+
+	// The ID's of this mechanic's output object (if there is any)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TArray<FName> OutputIDs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	int TriggerReqirements = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TEnumAsByte<enum EObjectState> DefaultObjectState;
+
+public:
+	FMechanicData();
+	~FMechanicData();
+};
+
 // Struct holding the data of an input float recording
 USTRUCT(BlueprintType, Category = "Levels")
 struct STARMENDERS_API FLevelData : public FTableRowBase
@@ -18,14 +70,32 @@ public:
 	/// -- Level Data --
 	// The name of the level
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
-	float Name;
+	FName Name;
 
-	// The class of the leve;
+	// The static mesh of the level
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
-	TSubclassOf<class ARoom_Parent> Class;
+	UStaticMesh* LevelMesh = nullptr;
+
+	/// -- Portal Door Data --
+	// The transform of the entrance door
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portal Door Data")
+	FTransform EntranceDoorTransform;
+
+	// The transform of the exit door
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portal Door Data")
+	FTransform ExitDoorTransform;
+
+	/// -- Record Pad Data --
+	// TArray of all record pads in the level
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record Pad Data")
+	TArray<FRecordPadData> RecordPads;
+
+	/// -- Mechanic Data --
+	// TArray of all record pads in the level
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TArray<FMechanicData> Mechanics;
 
 public:
 	FLevelData();
-	
 	~FLevelData();
 };

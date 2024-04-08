@@ -100,6 +100,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actives")
 	bool bDoorOpen = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actives")
+	TEnumAsByte<EDoorType> DoorType;
+
 	FVector LastPosition;
 	bool bLastInFront;
 

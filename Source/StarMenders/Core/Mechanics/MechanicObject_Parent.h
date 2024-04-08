@@ -60,7 +60,7 @@ public:
 	/// -- Mechanic Properties - Details --
 	// FString denoting the objects name
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Properties")
-	FString ObjectName;
+	FName ObjectName;
 
 	/// -- Mechanic Properties - Actives --
 	// Boolean denoting if the mechanic is active or not

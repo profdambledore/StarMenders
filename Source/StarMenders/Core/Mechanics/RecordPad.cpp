@@ -82,8 +82,8 @@ void ARecordPad::StartRecording(AController* PlayerController)
 
 	if (PlayerController) {
 		// Spawn a Character_Record
-		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(RecordingCharacterClass, FVector(), GetActorRotation());
-		RecordingCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 96.0f));
+		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(RecordingCharacterClass, FVector(0.0f, 0.0f, -300.0f), GetActorRotation());
+		RecordingCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
 
 		// Them make the inputted PlayerController possess this new character
 		PlayerController->Possess(RecordingCharacter);
@@ -122,15 +122,15 @@ void ARecordPad::SetRecording(FRecordingData NewRecord, AController* PlayerContr
 	// Cast to the controller and RePossess the original character
 	AController_Player* PC = Cast<AController_Player>(PlayerController);
 	PC->RePossessCharacter();
-	PC->GetPawn()->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 95.0f));
+	PC->GetPawn()->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
 }
 
 void ARecordPad::StartPlayback()
 {
 	if (RecordPresent) {
 		// Spawn a Character_Playback
-		ACharacter_Playback* PlaybackCharacter = GetWorld()->SpawnActor<ACharacter_Playback>(PlaybackCharacterClass, FVector(), GetActorRotation());
-		PlaybackCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 96.0f));
+		ACharacter_Playback* PlaybackCharacter = GetWorld()->SpawnActor<ACharacter_Playback>(PlaybackCharacterClass, FVector(0.0f, 0.0f, -300.0f), GetActorRotation());
+		PlaybackCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
 		CurrentCharacter = PlaybackCharacter;
 
 		ToggleHologramVisibility();

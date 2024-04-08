@@ -17,6 +17,9 @@ ALevelController::ALevelController()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
+	LevelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Level Mesh"));
+	LevelMesh->SetupAttachment(Root, "");
+
 	// Get a reference to the item data table
 	ConstructorHelpers::FObjectFinder<UDataTable>DTObject(TEXT("/Game/Core/Level/DT_LevelData"));
 	if (DTObject.Succeeded()) { LevelDataTable = DTObject.Object; }
@@ -31,7 +34,13 @@ void ALevelController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetupLevel("test_trees");
+	// Setup the portals
+	ShipDoor->SetupPairedDoor(EntranceDoor);
+	EntranceDoor->SetupPairedDoor(ShipDoor);
+	ExitDoor->SetupPairedDoor(HiddenShipDoor);
+	HiddenShipDoor->SetupPairedDoor(ExitDoor, ShipDoor);
+
+	SetupLevel(LevelID);
 	
 }
 
@@ -48,11 +57,44 @@ void ALevelController::SetupLevel(FName InLevelID)
 	FLevelData FoundRoom;
 	FoundRoom = *LevelDataTable->FindRow<FLevelData>(InLevelID, "", true);
 
-	if (FoundRoom.Class) {
-		// Get the class from the found struct and spawn it in the world
-		ActiveRoom = GetWorld()->SpawnActor<ARoom_Parent>(FoundRoom.Class, FVector(0.0f, 1000.0f, 2000.0f), FRotator(0.0f, 40.0f, 0.0f));
-		ActiveRoom->SetupRoomDoors(ShipDoor, HiddenShipDoor);
-		ActiveRoom->SetupMechanics();
+	if (FoundRoom.Name != "") {
+		// First, update the entrance and exit portal locations
+		EntranceDoor->SetActorTransform(FoundRoom.EntranceDoorTransform);
+		EntranceDoor->AddActorWorldOffset(WorldLocationOffset);
+		ExitDoor->SetActorTransform(FoundRoom.ExitDoorTransform);
+		ExitDoor->AddActorWorldOffset(WorldLocationOffset);
+	
+		// Next, spawn the required RecordPads
+		for (FRecordPadData i : FoundRoom.RecordPads) {
+			ARecordPad* NewPad = GetWorld()->SpawnActor<ARecordPad>(RecordPadClass, i.Transform);
+			NewPad->AddActorWorldOffset(WorldLocationOffset);
+			RecordPads.Add(NewPad);
+			NewPad->SetupVisualElements(i.Index);
+		}
+
+		// Follow with the Mechanic Objects
+		for (FMechanicData j : FoundRoom.Mechanics) {
+			AMechanicObject_Parent* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Parent>(j.Class, j.Transform);
+			NewMechanic->AddActorWorldOffset(WorldLocationOffset);
+			NewMechanic->ObjectName = j.ID;
+			NewMechanic->ObjectState = j.DefaultObjectState;
+			NewMechanic->TriggerRequirement = j.TriggerReqirements;
+			Mechanics.Add(NewMechanic);
+		}
+
+		// And setup their outputs where nessassary
+		for (int k = 0; k < Mechanics.Num(); k++) {
+			for (FName l : FoundRoom.Mechanics[k].OutputIDs) {
+				for (AMechanicObject_Parent* m : Mechanics) {
+					if (m->ObjectName == l) {
+						Mechanics[k]->OutputsObjects.Add(m);
+					}
+				}
+			}
+		}
+
+		// Set the level mesh
+		LevelMesh->SetStaticMesh(FoundRoom.LevelMesh);
 	}
 	
 }
@@ -65,7 +107,7 @@ void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_
 {
 	// Check each stored record pad pointer matches the pointer inputted.  If so, start recording on that pad
 	// Else, start that pads playback
-	for (ARecordPad* i : ActiveRoom->GetRecordPads()) {
+	for (ARecordPad* i : RecordPads) {
 		if (i == PadToRecordOn) {
 			i->StartRecording(Character->GetController());
 		}
@@ -75,12 +117,12 @@ void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_
 	}
 
 	// Next, reset the level mechanics
-	for (AMechanicObject_Parent* j : ActiveRoom->GetMechanicObjects()) {
-		j->ResetToDefault();
-	}
+	//for (AMechanicObject_Parent* j : ActiveRoom->GetMechanicObjects()) {
+	//	j->ResetToDefault();
+	//}
 
 	// Also, close the entrance door
-	ActiveRoom->EntranceDoor->SetDoorState(false);
+	EntranceDoor->SetDoorState(false);
 }
 
 void ALevelController::EndLevelPlayback()
@@ -90,5 +132,5 @@ void ALevelController::EndLevelPlayback()
 	}
 
 	// Also, reopen the entrance door
-	ActiveRoom->EntranceDoor->SetDoorState(true);
+	EntranceDoor->SetDoorState(true);
 }
