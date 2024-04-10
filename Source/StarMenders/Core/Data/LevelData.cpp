@@ -5,7 +5,8 @@
 
 #include "Core/Level/Room_Parent.h"
 #include "Core/Level/LevelController.h"
-#include "Core/Mechanics/MechanicObject_Parent.h"
+#include "Core/Mechanics/MechanicObject_Input.h"
+#include "Core/Mechanics/MechanicObject_Output.h"
 
 FLevelData::FLevelData()
 {
@@ -23,10 +24,18 @@ FRecordPadData::~FRecordPadData()
 {
 }
 
-FMechanicData::FMechanicData()
+FInputMechanicData::FInputMechanicData()
 {
 }
 
-FMechanicData::~FMechanicData()
+FInputMechanicData::~FInputMechanicData()
+{
+}
+
+FOutputMechanicData::FOutputMechanicData()
+{
+}
+
+FOutputMechanicData::~FOutputMechanicData()
 {
 }

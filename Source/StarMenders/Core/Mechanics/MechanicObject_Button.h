@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Core/Mechanics/MechanicObject_Parent.h"
+#include "Core/Mechanics/MechanicObject_Input.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
@@ -11,7 +11,7 @@
 #include "MechanicObject_Button.generated.h"
 
 UCLASS()
-class STARMENDERS_API AMechanicObject_Button : public AMechanicObject_Parent
+class STARMENDERS_API AMechanicObject_Button : public AMechanicObject_Input
 {
 	GENERATED_BODY()
 	
@@ -20,16 +20,6 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	/// -- Trigger Function --
-	// Called when this object recieves it's input
-	virtual void StartTrigger() override;
-
-	// Called when this object stops recieving it's input
-	virtual void EndTrigger() override;
-
-	// Called when this object stops recieving it's input
-	virtual void ActivateObject(bool bPositive) override;
 
 protected:
 	// Called when the game starts or when spawned

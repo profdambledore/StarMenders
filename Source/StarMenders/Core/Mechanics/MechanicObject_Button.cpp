@@ -39,9 +39,12 @@ void AMechanicObject_Button::OnButtonBeginOverlap(UPrimitiveComponent* Overlappe
 	if (OtherActor->ActorHasTag("CanActivateButtons")) {
 		OverlapActors.Add(OtherActor);
 
+		UE_LOG(LogTemp, Warning, TEXT("%i"), OverlapActors.Num());
+
+
 		// If OverlapActors now has exactly one index, activate the button
-		if (OverlapActors.Num() == 1 && ObjectState == On) {
-			StartTrigger();
+		if (OverlapActors.Num() == 1) {
+			ToggleInputActive();
 		}
 	}
 }
@@ -52,64 +55,16 @@ void AMechanicObject_Button::OnButtonEndOverlap(UPrimitiveComponent* OverlappedC
 	if (OtherActor->ActorHasTag("CanActivateButtons")) {
 		OverlapActors.Remove(OtherActor);
 
+		UE_LOG(LogTemp, Warning, TEXT("%i"), OverlapActors.Num());
+
 		// If OverlapActors now is empty, deactivate the button
-		if (OverlapActors.Num() == 0 && ObjectState != Off) {
-			EndTrigger();
+		if (OverlapActors.Num() == 0) {
+			ToggleInputActive();
 		}
 	}
 }
-
 
 void AMechanicObject_Button::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void AMechanicObject_Button::StartTrigger()
-{
-	ObjectState = Active;
-
-	// Activate all output objects
-	for (AMechanicObject_Parent* i : OutputsObjects) {
-		i->ActivateObject(true);
-		i->BlueprintTestFunction();
-	}
-}
-
-void AMechanicObject_Button::EndTrigger()
-{
-	ObjectState = On;
-
-	// Deactivate all output devices
-	for (AMechanicObject_Parent* i : OutputsObjects) {
-		i->ActivateObject(false);
-		i->BlueprintTestFunction();
-	}
-}
-
-void AMechanicObject_Button::ActivateObject(bool bPositive)
-{
-	if (bPositive) {
-		TriggerCount++;
-	}
-	else {
-		TriggerCount--;
-	}
-
-	// Check if the TriggerCount has now reached the TriggerReqirements
-	if (TriggerCount >= TriggerRequirement) {
-		// Check if the object is currently being triggered.  If so, StartTrigger
-		if (OverlapActors.Num() == 1) {
-			StartTrigger();
-		}
-		ObjectState = EObjectState::On;
-		UE_LOG(LogTemp, Warning, TEXT("State On in %s"), *this->GetName());
-	}
-	else {
-		if (OverlapActors.Num() != 0) {
-			EndTrigger();
-		}
-
-		ObjectState = EObjectState::Off;
-	}
 }

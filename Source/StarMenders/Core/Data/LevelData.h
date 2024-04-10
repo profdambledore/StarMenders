@@ -28,7 +28,7 @@ public:
 };
 
 USTRUCT(BlueprintType, Category = "Levels")
-struct STARMENDERS_API FMechanicData
+struct STARMENDERS_API FInputMechanicData
 {
 public:
 	GENERATED_BODY();
@@ -43,21 +43,44 @@ public:
 
 	// The class of the mechanic object
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
-	TSubclassOf<class AMechanicObject_Parent> Class;
+	TSubclassOf<class AMechanicObject_Input> Class;
 
 	// The ID's of this mechanic's output object (if there is any)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
 	TArray<FName> OutputIDs;
 
+public:
+	FInputMechanicData();
+	~FInputMechanicData();
+};
+
+USTRUCT(BlueprintType, Category = "Levels")
+struct STARMENDERS_API FOutputMechanicData
+{
+public:
+	GENERATED_BODY();
+
+	// The ID of this mechanic
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
-	int TriggerReqirements = 0;
+	FName ID;
+
+	// The transform of the mechanic
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	FTransform Transform;
+
+	// The class of the mechanic object
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TSubclassOf<class AMechanicObject_Output> Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
-	TEnumAsByte<enum EObjectState> DefaultObjectState;
+	int InputRequirements = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	bool bOutputAlwaysActive = false;
 
 public:
-	FMechanicData();
-	~FMechanicData();
+	FOutputMechanicData();
+	~FOutputMechanicData();
 };
 
 // Struct holding the data of an input float recording
@@ -93,7 +116,11 @@ public:
 	/// -- Mechanic Data --
 	// TArray of all record pads in the level
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
-	TArray<FMechanicData> Mechanics;
+	TArray<FInputMechanicData> InputMechanics;
+
+	// TArray of all record pads in the level
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TArray<FOutputMechanicData> OutputMechanics;
 
 public:
 	FLevelData();

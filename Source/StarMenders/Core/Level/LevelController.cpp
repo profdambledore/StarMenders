@@ -7,7 +7,8 @@
 #include "Core/Character/Character_Parent.h"
 #include "Core/Level/Room_Parent.h"
 #include "Core/Level/LevelDoor.h"
-#include "Core/Mechanics/MechanicObject_Parent.h"
+#include "Core/Mechanics/MechanicObject_Input.h"
+#include "Core/Mechanics/MechanicObject_Output.h"
 
 // Sets default values
 ALevelController::ALevelController()
@@ -72,25 +73,40 @@ void ALevelController::SetupLevel(FName InLevelID)
 			NewPad->SetupVisualElements(i.Index);
 		}
 
-		// Follow with the Mechanic Objects
-		for (FMechanicData j : FoundRoom.Mechanics) {
-			AMechanicObject_Parent* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Parent>(j.Class, j.Transform);
+		// Follow with the Output Mechanic Objects
+		for (FOutputMechanicData j : FoundRoom.OutputMechanics) {
+			AMechanicObject_Output* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Output>(j.Class, j.Transform);
 			NewMechanic->AddActorWorldOffset(WorldLocationOffset);
 			NewMechanic->ObjectName = j.ID;
-			NewMechanic->ObjectState = j.DefaultObjectState;
-			NewMechanic->TriggerRequirement = j.TriggerReqirements;
-			Mechanics.Add(NewMechanic);
+			NewMechanic->InputRequirement = j.InputRequirements;
+			NewMechanic->bOutputAlwaysActive = j.bOutputAlwaysActive;
+			OutputMechanics.Add(NewMechanic);
 		}
 
-		// And setup their outputs where nessassary
-		for (int k = 0; k < Mechanics.Num(); k++) {
-			for (FName l : FoundRoom.Mechanics[k].OutputIDs) {
-				for (AMechanicObject_Parent* m : Mechanics) {
+		// And the Input Mechanic Objects
+		for (FInputMechanicData j : FoundRoom.InputMechanics) {
+			AMechanicObject_Input* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Input>(j.Class, j.Transform);
+			NewMechanic->AddActorWorldOffset(WorldLocationOffset);
+			NewMechanic->ObjectName = j.ID;
+			for (FName l : j.OutputIDs) {
+				for (AMechanicObject_Output* m : OutputMechanics) {
 					if (m->ObjectName == l) {
-						Mechanics[k]->OutputsObjects.Add(m);
+						NewMechanic->OutputsToObjects.Add(m);
 					}
 				}
 			}
+
+			InputMechanics.Add(NewMechanic);
+		}
+		// And setup the Input Mechanics outputs where nessassary
+		for (int k = 0; k < InputMechanics.Num(); k++) {
+		//	for (FName l : FoundRoom.Mechanics[k].OutputIDs) {
+		//		for (AMechanicObject_Parent* m : Mechanics) {
+		//			if (m->ObjectName == l) {
+		//				//Mechanics[k]->OutputsObjects.Add(m);
+		//			}
+		//		}
+		//	}
 		}
 
 		// Set the level mesh

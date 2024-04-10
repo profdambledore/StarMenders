@@ -81,9 +81,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
 	TArray<class ARecordPad*> RecordPads;
 
-	// Pointer map to all Mechanic Objects
+	// Pointer map to all Input Mechanic Objects
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
-	TArray<class AMechanicObject_Parent*> Mechanics;
+	TArray<class AMechanicObject_Input*> InputMechanics;
+
+	// Pointer map to all Output Mechanic Objects
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Assets")
+	TArray<class AMechanicObject_Output*> OutputMechanics;
 
 	// -- Classes --
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Classes")
