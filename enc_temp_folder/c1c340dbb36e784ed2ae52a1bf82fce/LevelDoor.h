@@ -67,9 +67,6 @@ protected:
 	// Called to get the inverse rotation of a rotator
 	FRotator GetInverseRotation(FRotator InRotator);
 
-	// Called when InputCount >= InputRequirement
-	virtual void ToggleOutput(bool bNowActive);
-
 public:	
 	// -- Components --
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")

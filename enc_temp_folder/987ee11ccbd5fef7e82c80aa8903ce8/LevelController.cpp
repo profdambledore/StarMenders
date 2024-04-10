@@ -66,10 +66,7 @@ void ALevelController::SetupLevel(FName InLevelID)
 		ExitDoor->AddActorWorldOffset(WorldLocationOffset);
 
 		// Add the output door to the OutputMechanics array
-		// And setup the exit door with it's own output data
 		OutputMechanics.Add(ExitDoor);
-		ExitDoor->InputRequirement = FoundRoom.ExitDoorRequirements;
-		ExitDoor->SetAlwaysActive();
 	
 		// Next, spawn the required RecordPads
 		for (FRecordPadData i : FoundRoom.RecordPads) {
@@ -86,7 +83,6 @@ void ALevelController::SetupLevel(FName InLevelID)
 			NewMechanic->ObjectName = j.ID;
 			NewMechanic->InputRequirement = j.InputRequirements;
 			NewMechanic->bOutputAlwaysActive = j.bOutputAlwaysActive;
-			NewMechanic->SetAlwaysActive();
 			OutputMechanics.Add(NewMechanic);
 		}
 

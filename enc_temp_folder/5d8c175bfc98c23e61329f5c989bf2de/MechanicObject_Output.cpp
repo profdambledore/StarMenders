@@ -3,18 +3,6 @@
 
 #include "Core/Mechanics/MechanicObject_Output.h"
 
-void AMechanicObject_Output::SetAlwaysActive()
-{
-	if (bOutputAlwaysActive || InputRequirement == 0) {
-		bOutputAlwaysActive = true;
-		ToggleOutput(true);
-	}
-	else {
-		bOutputAlwaysActive = false;
-		ToggleOutput(false);
-	}
-}
-
 void AMechanicObject_Output::IncreaseInputAmount(bool bPositive)
 {
 	// Start by increasing this outputs current InputCount

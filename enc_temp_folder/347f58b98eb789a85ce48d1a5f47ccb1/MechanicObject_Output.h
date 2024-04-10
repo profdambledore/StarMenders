@@ -13,9 +13,6 @@ class STARMENDERS_API AMechanicObject_Output : public AMechanicObject_Parent
 
 public:
 	/// -- Mechanic Functions - Inputs --
-	// Called by the LevelController to set the output to always active if nessasary
-	void SetAlwaysActive();
-
 	// Called by Input Objects to increase the current input count
 	void IncreaseInputAmount(bool bPositive);
 

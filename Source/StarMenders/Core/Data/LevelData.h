@@ -108,6 +108,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portal Door Data")
 	FTransform ExitDoorTransform;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portal Door Data")
+	int ExitDoorRequirements = 0;
+
 	/// -- Record Pad Data --
 	// TArray of all record pads in the level
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record Pad Data")

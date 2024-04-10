@@ -97,7 +97,7 @@ void ACharacter_Playback::PlaybackTick()
 	// Check if MoveX[0].Tick == CurrentTick.  If so, call MoveX with the value and pop index 0
 	if (!Playback.MoveXRecording.IsEmpty()) {
 		if (Playback.MoveXRecording[0].Tick <= CurrentTickTime) { 
-			//UE_LOG(LogTemp, Warning, TEXT("MoveX = %f"), Playback.MoveXRecording[0].Value);
+			UE_LOG(LogTemp, Warning, TEXT("MoveX = %f"), Playback.MoveXRecording[0].Value);
 			MoveX(Playback.MoveXRecording[0].Value);
 			Playback.MoveXRecording.RemoveAt(0);
 		}

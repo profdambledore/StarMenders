@@ -174,9 +174,3 @@ FRotator ALevelDoor::GetInverseRotation(FRotator InRotator)
 
 	return OR;
 }
-
-void ALevelDoor::ToggleOutput(bool bNowActive)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Door Toggles"));
-	bDoorOpen = bNowActive;
-}
