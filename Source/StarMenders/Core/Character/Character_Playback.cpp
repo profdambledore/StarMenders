@@ -49,13 +49,6 @@ void ACharacter_Playback::SetupPlayback(FRecordingData NewPlayback)
 	// Store the playback
 	Playback = NewPlayback;
 
-	// Make a temporary index of all the arrays final indecies
-	//float a[] = {Playback.MoveXRecording.Last().Tick,
-		//Playback.MoveYRecording.Last().Tick, 
-		//Playback.JumpRecording.Last(), 
-		//Playback.InteractRecording.Last(), 
-		//Playback.CameraRecording.Last().Tick};
-
 	TArray<float> b;
 	if (Playback.MoveXRecording.IsEmpty()) {b.Insert(0, 0);}
 		else {b.Insert(Playback.MoveXRecording.Last().Tick, 0); };
@@ -80,11 +73,6 @@ void ACharacter_Playback::SetupPlayback(FRecordingData NewPlayback)
 	GetWorld()->GetTimerManager().SetTimer(PlaybackTotalHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Playback::EndPlayback), MaximumPlaybackTime, false, MaximumPlaybackTime);
 }
 
-void ACharacter_Playback::StartPlayback()
-{
-
-}
-
 void ACharacter_Playback::EndPlayback()
 {
 	// Clear the timer handles
@@ -97,7 +85,6 @@ void ACharacter_Playback::PlaybackTick()
 	// Check if MoveX[0].Tick == CurrentTick.  If so, call MoveX with the value and pop index 0
 	if (!Playback.MoveXRecording.IsEmpty()) {
 		if (Playback.MoveXRecording[0].Tick <= CurrentTickTime) { 
-			//UE_LOG(LogTemp, Warning, TEXT("MoveX = %f"), Playback.MoveXRecording[0].Value);
 			MoveX(Playback.MoveXRecording[0].Value);
 			Playback.MoveXRecording.RemoveAt(0);
 		}

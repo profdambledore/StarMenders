@@ -27,7 +27,7 @@ public:
 
 	/// -- Recording Functions --
 	// Called to start a recording on this recording pad
-	void StartRecording(AController* PlayerController);
+	void StartRecording(class ACharacter_Default* PlayerCharacter);
 
 	// Called to clear the recording on the pad
 	void ClearRecording();
@@ -37,7 +37,7 @@ public:
 	bool GetHasRecording();
 
 	// Called to set the recording on this pad
-	void SetRecording(FRecordingData NewRecord, AController* PlayerController);
+	void SetRecording(FRecordingData NewRecord, ACharacter_Default* PlayerCharacter);
 
 	/// -- Playback Functions --
 	// Called to start the playback of the recording (if one exists)

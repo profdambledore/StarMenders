@@ -30,7 +30,7 @@ void ACharacter_Record::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MenuUI->UpdateActiveState("Recording");
+	//MenuUI->UpdateActiveState("Recording");
 }
 
 void ACharacter_Record::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -87,7 +87,7 @@ void ACharacter_Record::RecordingTick()
 	// Finally, increment CurrentTickTime
 	CurrentTickTime += TimerTickRate;
 
-	MenuUI->RecordState->UpdateRemainingTime(MaximumRecordingTime - CurrentTickTime);
+	//MenuUI->RecordState->UpdateRemainingTime(MaximumRecordingTime - CurrentTickTime);
 }
 
 void ACharacter_Record::EndRecording()
@@ -97,7 +97,7 @@ void ACharacter_Record::EndRecording()
 	GetWorld()->GetTimerManager().ClearTimer(RecordingTotalHandle);
 
 	// Pass the recording to the recording pad associated with this recording character
-	OwningRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording), GetController());
+	//OwningRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording), GetController());
 
 	// Call  on the LevelController
 	Cast<ALevelController>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelController::StaticClass()))->EndLevelPlayback();

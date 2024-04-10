@@ -76,20 +76,13 @@ void ARecordPad::OnRecorderEndOverlap(UPrimitiveComponent* OverlappedComp, AActo
 	}
 }
 
-void ARecordPad::StartRecording(AController* PlayerController)
+void ARecordPad::StartRecording(ACharacter_Default* PlayerCharacter)
 {
 	ClearRecording();
 
-	if (PlayerController) {
-		// Spawn a Character_Record
-		ACharacter_Record* RecordingCharacter = GetWorld()->SpawnActor<ACharacter_Record>(RecordingCharacterClass, FVector(0.0f, 0.0f, -300.0f), GetActorRotation());
-		RecordingCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
-
-		// Them make the inputted PlayerController possess this new character
-		PlayerController->Possess(RecordingCharacter);
-
-		// Finally, setup the character and start it's timer
-		RecordingCharacter->StartRecording(this);
+	if (PlayerCharacter) {
+		// Setup the character and start it's timer
+		PlayerCharacter->StartRecording(this);
 	}
 }
 
@@ -114,15 +107,13 @@ bool ARecordPad::GetHasRecording()
 	return RecordPresent;
 }
 
-void ARecordPad::SetRecording(FRecordingData NewRecord, AController* PlayerController)
+void ARecordPad::SetRecording(FRecordingData NewRecord, ACharacter_Default* PlayerCharacter)
 {
 	Record = NewRecord;
 	RecordPresent = true;
 
 	// Cast to the controller and RePossess the original character
-	AController_Player* PC = Cast<AController_Player>(PlayerController);
-	PC->RePossessCharacter();
-	PC->GetPawn()->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
+	PlayerCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
 }
 
 void ARecordPad::StartPlayback()

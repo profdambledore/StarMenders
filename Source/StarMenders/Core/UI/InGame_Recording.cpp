@@ -3,7 +3,7 @@
 #include "Core/UI/InGame_Recording.h"
 
 #include "Core/UI/InGame_Master.h"
-#include "Core/Character/Character_Record.h"
+#include "Core/Character/Character_Default.h"
 
 void UInGame_Recording::NativeConstruct()
 {
@@ -30,7 +30,7 @@ void UInGame_Recording::OnEndButtonHovered()
 void UInGame_Recording::OnEndButtonReleased()
 {
 	// Cast to the recording character and end the recording early
-	Cast<ACharacter_Record>(MasterUI->GetPlayerOwner())->EndRecording();
+	Cast<ACharacter_Default>(MasterUI->GetPlayerOwner())->EndRecording();
 }
 
 void UInGame_Recording::OnEndButtonUnhovered()

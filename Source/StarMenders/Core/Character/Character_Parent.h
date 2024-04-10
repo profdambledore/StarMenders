@@ -10,8 +10,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "Components/WidgetComponent.h"
-#include "Components/WidgetInteractionComponent.h"
 
 #include "Character_Parent.generated.h"
 
@@ -38,19 +36,13 @@ public:
 	virtual void MoveY(float AxisValue);
 
 	// Called to make the camera jump
-	void StartJump();
+	virtual void StartJump();
 
 	// Called to make the character interact
 	virtual void Interact();
 
 	// Called to make the character's camera rotate
 	virtual void RotateCamera(FVector2D AxisValue);
-
-	// Called to make the character enter their menu
-	void ToggleMenu(bool bInMenu);
-
-	// Called to make the character interact with their UI element
-	void UIInteract(bool bInMenu);
 
 protected:
 	// Called when the game starts or when spawned
@@ -66,14 +58,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UPhysicsHandleComponent* ObjectPhysicsHandle = nullptr;
 
-	// WidgetComponent used to display the InGame UI
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	UWidgetComponent* MenuWidgetComponent;
-
-	// WidgetInteractionComponent used to interact with MenuWidgetComponent
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	UWidgetInteractionComponent* WidgetInteractionComponent;
-
 protected:
 	/// -- Actives --
 	// Bool denoting if the character can move or not
@@ -83,13 +67,7 @@ protected:
 	// Float denoting the character's pick up spring arm
 	float PickUpArmLength = 300.0f;
 	
-	/// -- UI --
-	// Pointer to the UI added to the viewport
-	class UInGame_Master* MenuUI = nullptr;
-
 	/// -- Recording and Playback
 	// Float denoting the tick rate of the recording and playback timer
 	float TimerTickRate = 0.0005f;
-
-
 };

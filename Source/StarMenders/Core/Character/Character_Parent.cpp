@@ -9,7 +9,7 @@
 
 #include "Core/Mechanics/Mechanic_WorldObject.h"
 
-#include "Core/UI/InGame_Master.h"
+
 
 // Sets default values
 ACharacter_Parent::ACharacter_Parent()
@@ -24,37 +24,17 @@ ACharacter_Parent::ACharacter_Parent()
 	// Setup the object physics handle
 	ObjectPhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Object Physics Handle"));
 
-	// Setup the MenuWidgetComponent and the WidgetInteractionComponent
-	MenuWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu Widget Component"));
-	MenuWidgetComponent->SetupAttachment(GetMesh(), "");
-	MenuWidgetComponent->SetGenerateOverlapEvents(false);
-
-	WidgetInteractionComponent = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Widget Interaction Component"));
-	WidgetInteractionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
-	WidgetInteractionComponent->InteractionSource = EWidgetInteractionSource::Mouse;
-	WidgetInteractionComponent->SetupAttachment(FirstPersonCamera, "");
-
 	// Setup the character's gameplay tags
 	Tags.Add("CanActivateButtons"); // Allows the character to activate buttons
 
-	// Get the InGame UserWidget for the character and store it
-	static ConstructorHelpers::FClassFinder<UUserWidget>UIClass(TEXT("/Game/Core/UI/WBP_InGame"));
-	if (UIClass.Succeeded()) {
-		MenuWidgetComponent->SetWidgetClass(UIClass.Class);
-	};
-
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when the game starts or when spawned
 void ACharacter_Parent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Get reference to the interact widget class
-	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
-	MenuUI->SetPlayerOwner(this);	
 }
 
 // Called every frame
@@ -73,23 +53,13 @@ void ACharacter_Parent::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void ACharacter_Parent::MoveX(float AxisValue)
 {
-	if (AxisValue != 0 && !bMovementDisabled) {
-		// Move on the X axis based on the input's axis value
-		// Get the camera's forward vector X and Y, removing the Z
-		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
-		Direction = FVector(Direction.X, Direction.Y, 0.0f).GetSafeNormal();
-		AddMovementInput(Direction, AxisValue, false);
-		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
-			// Update the PhysicsHandles TargetLocation
-			ObjectPhysicsHandle->SetTargetLocationAndRotation(FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
-		}
-	}
+	
 }
 
 void ACharacter_Parent::MoveY(float AxisValue)
 {
 	if (AxisValue != 0 && !bMovementDisabled) {
-		// Move on the X axis based on the input's axis value
+		// Move on the Y axis based on the input's axis value
 		AddMovementInput(FirstPersonCamera->GetRightVector(), AxisValue, false);
 		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
 			// Update the PhysicsHandles TargetLocation
@@ -143,30 +113,6 @@ void ACharacter_Parent::Interact()
 
 void ACharacter_Parent::RotateCamera(FVector2D AxisValue)
 {
-	if (!bMovementDisabled) {
-		//UE_LOG(LogTemp, Warning, TEXT("Rotate = %f / %f"), AxisValue.X, AxisValue.Y);
 
-		// Rotate on the X axis based on the input's axis value
-		AddControllerYawInput(AxisValue.X);
-		AddControllerPitchInput(AxisValue.Y);
-
-		if (ObjectPhysicsHandle->GetGrabbedComponent()) {
-			// Update the PhysicsHandles TargetLocation
-			ObjectPhysicsHandle->SetTargetLocationAndRotation(FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), UKismetMathLibrary::FindLookAtRotation(ObjectPhysicsHandle->GetGrabbedComponent()->GetComponentLocation(), FirstPersonCamera->GetComponentLocation()));
-		}
-	}
 }
 
-void ACharacter_Parent::ToggleMenu(bool bInMenu)
-{
-	MenuWidgetComponent->SetVisibility(bInMenu);
-	bMovementDisabled = bInMenu;
-}
-
-void ACharacter_Parent::UIInteract(bool bInMenu)
-{
-	if (bInMenu) {
-		WidgetInteractionComponent->PressPointerKey(EKeys::LeftMouseButton);
-		WidgetInteractionComponent->ReleasePointerKey(EKeys::LeftMouseButton);
-	}
-}

@@ -32,7 +32,7 @@ public:
 
 	/// -- Recording and Playing --
 	// Called to start playback of a level and record on a selected pad
-	void StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Parent* Character);
+	void StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Default* Character);
 
 	// Called to end the playback of a level
 	void EndLevelPlayback();

@@ -17,9 +17,6 @@ class STARMENDERS_API ACharacter_Playback : public ACharacter_Parent
 public:
 	void SetupPlayback(FRecordingData NewPlayback);
 
-	// Called to start a recording
-	void StartPlayback();
-
 	// Timer event for the total duration of the recording
 	void EndPlayback();
 

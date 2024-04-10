@@ -4,7 +4,7 @@
 #include "Core/Level/LevelController.h"
 
 #include "Core/Mechanics/RecordPad.h"
-#include "Core/Character/Character_Parent.h"
+#include "Core/Character/Character_Default.h"
 #include "Core/Level/Room_Parent.h"
 #include "Core/Level/LevelDoor.h"
 #include "Core/Mechanics/MechanicObject_Input.h"
@@ -116,13 +116,13 @@ void ALevelController::ClearLevel()
 {
 }
 
-void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Parent* Character)
+void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Default* Character)
 {
 	// Check each stored record pad pointer matches the pointer inputted.  If so, start recording on that pad
 	// Else, start that pads playback
 	for (ARecordPad* i : RecordPads) {
 		if (i == PadToRecordOn) {
-			i->StartRecording(Character->GetController());
+			i->StartRecording(Character);
 		}
 		else {
 			i->StartPlayback();

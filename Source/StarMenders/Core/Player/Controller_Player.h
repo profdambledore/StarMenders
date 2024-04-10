@@ -25,6 +25,9 @@ public:
 	// Called when 
 	virtual void OnPossess(APawn* InPawn) override;
 
+	// Called to make the character enter their menu
+	void ToggleMenu(const FInputActionValue& Value);
+
 	// Called to re-possess the original character
 	void RePossessCharacter();
 
@@ -48,11 +51,18 @@ protected:
 	// Called to make the character's camera rotate
 	void RotateCamera(const FInputActionValue& Value);
 
-	// Called to make the character enter their menu
-	void ToggleMenu(const FInputActionValue& Value);
-
 	// Called to make the character interact with their UI component
 	void UIInteract(const FInputActionValue& Value);
+
+	/// -- Recording Inputs --
+	// MoveX input functions for beginning and ending
+	void RecordMoveX(const FInputActionValue& Value);
+
+	// MoveY input functions for beginning and ending
+	void RecordMoveY(const FInputActionValue& Value);
+
+	// MoveY input functions for beginning and ending
+	void RecordCamera(const FInputActionValue& Value);
 
 private:
 	// Called to return a pointer based on which character this controller is currently possessing
@@ -61,7 +71,7 @@ private:
 private:
 	/// -- Controlled Character --
 	// Pointer to the character this controller possesses
-	class ACharacter_Parent* Character = nullptr;
+	class ACharacter_Default* Character = nullptr;
 
 	// Pointer to the recording character this controller possesses
 	class ACharacter_Record* RecordingCharacter = nullptr;
