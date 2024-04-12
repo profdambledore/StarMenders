@@ -8,6 +8,8 @@ void AMechanicObject_Input::ToggleInputActive()
 {
 	bInputActive = !bInputActive;
 
+	ModifyVisualElements(bInputActive);
+
 	// Add inputs to all output objects
 	for (AMechanicObject_Output* i : OutputsToObjects) {
 		i->IncreaseInputAmount(bInputActive);

@@ -17,6 +17,7 @@ class STARMENDERS_API AMechanicObject_Input : public AMechanicObject_Parent
 public:
 	/// -- Mechanic Functions - Inputs --
 	// Called to toggle the input object on or off
+	UFUNCTION(BlueprintCallable)
 	void ToggleInputActive();
 
 public:

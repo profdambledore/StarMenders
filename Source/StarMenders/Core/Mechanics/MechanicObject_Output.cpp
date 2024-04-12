@@ -36,4 +36,5 @@ void AMechanicObject_Output::IncreaseInputAmount(bool bPositive)
 
 void AMechanicObject_Output::ToggleOutput(bool bNowActive)
 {
+	ModifyVisualElements(bNowActive);
 }

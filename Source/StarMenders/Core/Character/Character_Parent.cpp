@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 
+#include "Core/Mechanics/MechanicObject_SButton.h"
+
 #include "Core/Mechanics/Mechanic_WorldObject.h"
 
 
@@ -106,6 +108,13 @@ void ACharacter_Parent::Interact()
 
 				// Finally, update the WorldObject's CurrentGrabber with this character
 				CG->SetCurrentGrabber(this);
+			}
+			// If the object can't be grabbed, check if it has an interactable tag
+			// Currently only SButtons can be interacted with, but this could change in future versions
+			else if (TraceHit.GetActor()->ActorHasTag(FName("IsInteractable"))) {
+				// Cast to the SButton class
+				AMechanicObject_SButton* SButton = Cast<AMechanicObject_SButton>(TraceHit.GetActor());
+				SButton->UseButton();
 			}
 		}
 	}
