@@ -37,7 +37,7 @@ public:
 	bool GetHasRecording();
 
 	// Called to set the recording on this pad
-	void SetRecording(FRecordingData NewRecord, ACharacter_Default* PlayerCharacter);
+	void SetRecording(FRecordingData NewRecord, ACharacter_Default* PlayerCharacter = nullptr);
 
 	/// -- Playback Functions --
 	// Called to start the playback of the recording (if one exists)

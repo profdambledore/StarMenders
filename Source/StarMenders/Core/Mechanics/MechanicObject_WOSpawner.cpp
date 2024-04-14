@@ -12,7 +12,7 @@ AMechanicObject_WOSpawner::AMechanicObject_WOSpawner()
 void AMechanicObject_WOSpawner::ToggleOutput(bool bNowActive)
 {
 	// Check if bNowActive is true (we only want the box to move on activation)
-	if (bNowActive = true) {
+	if (bNowActive == true) {
 		// Check if LiveObject is set
 		if (LiveObject) {
 			// Move it to the ObjectSpawnLocation

@@ -162,10 +162,11 @@ void ACharacter_Default::StartRecording(ARecordPad* NewRecordPad)
 	MenuUI->UpdateActiveState("Recording");
 
 	CurrentTickTime = 0.0f;
+	bool bTeleportCharacter = true;
 
 	// Setup two timers for this character - the recording tick and the total buff duration
 	GetWorld()->GetTimerManager().SetTimer(RecordingTickHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Default::RecordingTick), TimerTickRate, true, TimerTickRate);
-	GetWorld()->GetTimerManager().SetTimer(RecordingTotalHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Default::EndRecording), MaximumRecordingTime, false, MaximumRecordingTime);
+	GetWorld()->GetTimerManager().SetTimer(RecordingTotalHandle, FTimerDelegate::CreateUObject(this, &ACharacter_Default::EndRecording, bTeleportCharacter), MaximumRecordingTime, false, MaximumRecordingTime);
 
 	Cast<AController_Player>(GetController())->ToggleMenu(false);
 }
@@ -192,14 +193,20 @@ void ACharacter_Default::RecordingTick()
 	MenuUI->RecordState->UpdateRemainingTime(MaximumRecordingTime - CurrentTickTime);
 }
 
-void ACharacter_Default::EndRecording()
+void ACharacter_Default::EndRecording(bool bTeleportCharacter)
 {
 	// Clear the timer handles
 	GetWorld()->GetTimerManager().ClearTimer(RecordingTickHandle);
 	GetWorld()->GetTimerManager().ClearTimer(RecordingTotalHandle);
 
 	// Pass the recording to the recording pad associated with this recording character
-	CurrentRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording), this);
+	if (bTeleportCharacter) {
+		CurrentRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording), this);
+		Cast<AController_Player>(GetController())->ToggleMenu(false);
+	}
+	else {
+		CurrentRecordPad->SetRecording(FRecordingData(MoveXRecording, MoveYRecording, JumpRecording, InteractRecording, CameraRecording));
+	}
 
 	// Call  on the LevelController
 	Cast<ALevelController>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelController::StaticClass()))->EndLevelPlayback();
@@ -208,8 +215,6 @@ void ACharacter_Default::EndRecording()
 
 	bCurrentlyRecording = false;
 	SetCurrentRecordPad(nullptr);
-
-	Cast<AController_Player>(GetController())->ToggleMenu(false);
 }
 
 ARecordPad* ACharacter_Default::GetCurrentRecordPad()

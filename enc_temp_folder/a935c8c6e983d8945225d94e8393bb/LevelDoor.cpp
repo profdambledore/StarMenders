@@ -156,9 +156,9 @@ void ALevelDoor::TeleportCharacter(AActor* CharacterToTeleport)
 	Char->GetMovementComponent()->Velocity = OutVel * Char->GetMovementComponent()->Velocity.Length();
 
 	// Finall,y if the door is the ExitDoor and the character is recording, save the recording on the record pad
-	if (Char->IsA(ACharacter_Default::StaticClass()) && DoorType == Exit) {
+	if (Char->IsA(ACharacter_Default::StaticClass())) {
 		ACharacter_Default* Def = Cast<ACharacter_Default>(Char);
-		if (Def->bCurrentlyRecording) {
+		if (Def->bCurrentlyRecording && DoorType == Exit) {
 			Def->EndRecording(false);
 		}	
 	}

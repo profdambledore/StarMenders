@@ -56,7 +56,7 @@ public:
 	void StartRecording(class ARecordPad* NewRecordPad);
 
 	// Timer event for the total duration of the recording
-	void EndRecording();
+	void EndRecording(bool bTeleportCharacter = true);
 
 	/// -- Interaction --
 	// Called to return CurrentRecordPad
@@ -83,6 +83,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UWidgetInteractionComponent* WidgetInteractionComponent;
 
+	// Bool for if the recording is active
+	bool bCurrentlyRecording = false;
+
 	/// -- Input Value Binds --
 	struct FEnhancedInputActionValueBinding* MoveXBind;
 	struct FEnhancedInputActionValueBinding* MoveYBind;
@@ -90,9 +93,6 @@ public:
 
 protected:
 	/// -- Recording --
-	// Bool for if the recording is active
-	bool bCurrentlyRecording = false;
-
 	// Bool for each input to denote if the input is currently being pressed
 	bool bMoveXActive = false;
 	bool bMoveYActive = false;

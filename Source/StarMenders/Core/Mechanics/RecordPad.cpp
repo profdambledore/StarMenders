@@ -113,7 +113,9 @@ void ARecordPad::SetRecording(FRecordingData NewRecord, ACharacter_Default* Play
 	RecordPresent = true;
 
 	// Cast to the controller and RePossess the original character
-	PlayerCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
+	if (PlayerCharacter) {
+		PlayerCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
+	}
 }
 
 void ARecordPad::StartPlayback()
