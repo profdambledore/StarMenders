@@ -15,7 +15,10 @@
 #include "Core/UI/InGame_Master.h"
 #include "Core/UI/InGame_Recording.h"
 #include "Core/Level/LevelController.h"
+#include "Core/Mechanics/MechanicObject_SButton.h"
+#include "Core/Level/LevelSelector.h"
 #include "Core/Player/Controller_Player.h"
+#include "Core/Mechanics/Mechanic_WorldObject.h"
 
 ACharacter_Default::ACharacter_Default()
 {
@@ -34,12 +37,17 @@ ACharacter_Default::ACharacter_Default()
 	if (UIClass.Succeeded()) {
 		MenuWidgetComponent->SetWidgetClass(UIClass.Class);
 	};
+
+	// Add the CanAccessLevelSelectTag
+	Tags.Add("CanAccessLevelSelect");
 }
 
 // Called when the game starts or when spawned
 void ACharacter_Default::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PC = Cast<AController_Player>(GetController());
 
 	// Get reference to the interact widget class
 	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
@@ -77,7 +85,59 @@ void ACharacter_Default::StartJump()
 
 void ACharacter_Default::Interact()
 {
-	ACharacter_Parent::Interact();
+	// Check if this character is currently holding an object
+	if (ObjectPhysicsHandle->GetGrabbedComponent()) {
+		// If so, stop grabbing the component
+		ObjectPhysicsHandle->ReleaseComponent();
+	}
+	else if (CurrentLevelSelector){
+		CurrentLevelSelector->EndInteraction();
+	}
+	else {
+		// Fire a line trace infront of this character
+		FHitResult TraceHit;
+		FCollisionQueryParams TraceParams;
+		TraceParams.AddIgnoredActor(this);
+
+		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, FirstPersonCamera->GetComponentLocation(), FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), ECC_WorldDynamic, TraceParams);
+		DrawDebugLine(GetWorld(), FirstPersonCamera->GetComponentLocation(), FirstPersonCamera->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(FirstPersonCamera->GetComponentRotation()) * PickUpArmLength), FColor::White, true, 5, 0, 5);
+		// Check if the object hit has a tag of "CanBePickedUp"
+		if (TraceHit.GetActor()) {
+			if (TraceHit.GetActor()->ActorHasTag(FName("CanBePickedUp"))) {
+				// Next, check if the object is currently being grabbed.
+				// Cast to the WorldObject, call GetCurrentGrabber and release the object from the grabber if not nullptr
+				AMechanic_WorldObject* CG = Cast<AMechanic_WorldObject>(TraceHit.GetActor());
+				if (CG->GetCurrentGrabber()) {
+					CG->GetCurrentGrabber()->ObjectPhysicsHandle->ReleaseComponent();
+				}
+				// If so, grab the actor via the ObjectPhysicsHandle
+				// Calculate the object's component bounds to grab it in the center of the object
+				FVector BoxExtents;
+				BoxExtents = TraceHit.GetComponent()->GetLocalBounds().BoxExtent;
+				BoxExtents = BoxExtents / 6;
+				ObjectPhysicsHandle->GrabComponentAtLocationWithRotation(TraceHit.GetComponent(), "", TraceHit.GetComponent()->GetComponentLocation() + BoxExtents, TraceHit.GetComponent()->GetComponentRotation());
+
+				// Finally, update the WorldObject's CurrentGrabber with this character
+				CG->SetCurrentGrabber(this);
+			}
+			// If the object can't be grabbed, check if it has an interactable tag
+			// Currently only SButtons can be interacted with, but this could change in future versions
+			else if (TraceHit.GetActor()->ActorHasTag(FName("IsInteractable"))) {
+				// Cast to the SButton class
+				AMechanicObject_SButton* SButton = Cast<AMechanicObject_SButton>(TraceHit.GetActor());
+				SButton->UseButton();
+			}
+			// If the object has neither tag, check if it is a LevelSelector after checking if this character has the tag of CanAccessLevelSelect
+			else if (TraceHit.GetActor()->IsA(ALevelSelector::StaticClass()) && ActorHasTag("CanAccessLevelSelect")) {
+				// Cast to the LevelSelector, blend between the two cameras and call 
+				CurrentLevelSelector = Cast<ALevelSelector>(TraceHit.GetActor());
+				PC->bShowMouseCursor = true;
+				PC->SetViewTargetWithBlend(CurrentLevelSelector, 2.0f);
+				bMovementDisabled = true;
+				CurrentLevelSelector->SetActive(this);
+			}
+		}
+	}
 
 	if (bCurrentlyRecording) {
 		InteractRecording.Add(CurrentTickTime);
@@ -145,6 +205,9 @@ void ACharacter_Default::UIInteract(bool bInMenu)
 	if (bInMenu) {
 		WidgetInteractionComponent->PressPointerKey(EKeys::LeftMouseButton);
 		WidgetInteractionComponent->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
+	else if (CurrentLevelSelector) {
+		CurrentLevelSelector->PrimaryInteract();
 	}
 }
 
@@ -230,5 +293,13 @@ void ACharacter_Default::SetCurrentRecordPad(ARecordPad* NewRecordPad)
 	else {
 
 	}
+}
+
+void ACharacter_Default::ExitInteraction()
+{
+	CurrentLevelSelector = nullptr;
+	bMovementDisabled = false;
+	PC->bShowMouseCursor = false;
+	PC->SetViewTargetWithBlend(this, 2.0f);
 }
 

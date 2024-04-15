@@ -83,6 +83,7 @@ void ARecordPad::StartRecording(ACharacter_Default* PlayerCharacter)
 	if (PlayerCharacter) {
 		// Setup the character and start it's timer
 		PlayerCharacter->StartRecording(this);
+		PlayerCharacter->SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 200.0f));
 	}
 }
 

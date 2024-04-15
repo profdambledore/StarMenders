@@ -65,6 +65,9 @@ public:
 	// Called to set the CurrentRecordPad
 	void SetCurrentRecordPad(class ARecordPad* NewRecordPad);
 
+	// Called to return the view to the FirstPersonCamera
+	void ExitInteraction();
+
 	protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -85,6 +88,9 @@ public:
 
 	// Bool for if the recording is active
 	bool bCurrentlyRecording = false;
+
+	// Pointer to the controller
+	class AController_Player* PC = nullptr;
 
 	/// -- Input Value Binds --
 	struct FEnhancedInputActionValueBinding* MoveXBind;
@@ -109,6 +115,12 @@ protected:
 
 	// Float denoting the current tick time
 	float CurrentTickTime = 0.0f;
+
+	/// -- Pointers --
+
+
+	// Pointer to the current LevelSelector being used (nullptr if none in use)
+	class ALevelSelector* CurrentLevelSelector = nullptr;
 
 	// Pointer to the record pad currently being accessed
 	class ARecordPad* CurrentRecordPad = nullptr;

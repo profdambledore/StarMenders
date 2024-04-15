@@ -36,4 +36,7 @@ public:
 	// Boolean denoting if this output is always active
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Output Properties")
 	bool bOutputAlwaysActive = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object")
+	TSubclassOf<AActor> ObjectToSpawn;
 };

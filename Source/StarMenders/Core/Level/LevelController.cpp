@@ -21,7 +21,7 @@ ALevelController::ALevelController()
 	LevelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Level Mesh"));
 	LevelMesh->SetupAttachment(Root, "");
 
-	// Get a reference to the item data table
+	// Get a reference to the level data table
 	ConstructorHelpers::FObjectFinder<UDataTable>DTObject(TEXT("/Game/Core/Level/DT_LevelData"));
 	if (DTObject.Succeeded()) { LevelDataTable = DTObject.Object; }
 
@@ -41,7 +41,7 @@ void ALevelController::BeginPlay()
 	ExitDoor->SetupPairedDoor(HiddenShipDoor);
 	HiddenShipDoor->SetupPairedDoor(ExitDoor, ShipDoor);
 
-	SetupLevel(LevelID);
+	//SetupLevel(LevelID);
 	
 }
 
@@ -54,6 +54,8 @@ void ALevelController::Tick(float DeltaTime)
 
 void ALevelController::SetupLevel(FName InLevelID)
 {
+	ClearLevel();
+
 	// Find the level from the data table
 	FLevelData FoundRoom;
 	FoundRoom = *LevelDataTable->FindRow<FLevelData>(InLevelID, "", true);
@@ -64,6 +66,10 @@ void ALevelController::SetupLevel(FName InLevelID)
 		EntranceDoor->AddActorWorldOffset(WorldLocationOffset);
 		ExitDoor->SetActorTransform(FoundRoom.ExitDoorTransform);
 		ExitDoor->AddActorWorldOffset(WorldLocationOffset);
+
+		// Then update their clipping
+		EntranceDoor->UpdateClipPlane();
+		ExitDoor->UpdateClipPlane();
 
 		// Add the output door to the OutputMechanics array
 		// And setup the exit door with it's own output data
@@ -86,6 +92,7 @@ void ALevelController::SetupLevel(FName InLevelID)
 			NewMechanic->ObjectName = j.ID;
 			NewMechanic->InputRequirement = j.InputRequirements;
 			NewMechanic->bOutputAlwaysActive = j.bOutputAlwaysActive;
+			NewMechanic->ObjectToSpawn = j.ObjectToSpawn;
 			NewMechanic->SetAlwaysActive();
 			OutputMechanics.Add(NewMechanic);
 		}
@@ -114,6 +121,28 @@ void ALevelController::SetupLevel(FName InLevelID)
 
 void ALevelController::ClearLevel()
 {
+	// Check if a level is spawned.  If so, remove it
+	// TO:DO - Update to not destroy stuff but store objects in pools
+	if (LevelMesh->GetStaticMesh()) {
+		LevelMesh->SetStaticMesh(nullptr);
+
+		for (ARecordPad* RecordPad : RecordPads) {
+			RecordPad->Destroy();
+		}
+		RecordPads.Empty();
+
+		for (AMechanicObject_Input* input : InputMechanics) {
+			input->Destroy();
+		}
+		InputMechanics.Empty();
+
+		for (AMechanicObject_Output* output : OutputMechanics) {
+			if (output->ObjectName != "OutputDoor") {
+				output->Destroy();
+			}
+		}
+		OutputMechanics.Empty();
+	}
 }
 
 void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Default* Character)
@@ -130,9 +159,9 @@ void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_
 	}
 
 	// Next, reset the level mechanics
-	//for (AMechanicObject_Parent* j : ActiveRoom->GetMechanicObjects()) {
-	//	j->ResetToDefault();
-	//}
+	for (AMechanicObject_Output* j : OutputMechanics) {
+		j->ResetToDefault();
+	}
 
 	// Also, close the entrance door
 	EntranceDoor->SetDoorState(false);

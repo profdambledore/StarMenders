@@ -25,3 +25,8 @@ void AMechanicObject_WOSpawner::ToggleOutput(bool bNowActive)
 	}
 	ModifyVisualElements(bNowActive);
 }
+
+void AMechanicObject_WOSpawner::ResetToDefault()
+{
+	LiveObject->SetActorLocation(FVector(0.0f, -2000.0f, 0.0f));
+}

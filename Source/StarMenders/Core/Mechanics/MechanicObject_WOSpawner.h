@@ -6,9 +6,7 @@
 #include "Core/Mechanics/MechanicObject_Output.h"
 #include "MechanicObject_WOSpawner.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class STARMENDERS_API AMechanicObject_WOSpawner : public AMechanicObject_Output
 {
@@ -20,15 +18,13 @@ public:
 	// Called when InputCount >= InputRequirement
 	virtual void ToggleOutput(bool bNowActive);
 
+	virtual void ResetToDefault() override;
+
 public:
 	/// -- Components --
 	// SceneComponent of the object spawn/move location
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	USceneComponent* ObjectSpawnLocation = nullptr;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object")
-	TSubclassOf<AActor> ObjectToSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object")
 	AActor* LiveObject = nullptr;

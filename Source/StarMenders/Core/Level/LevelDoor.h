@@ -39,6 +39,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetupPairedDoor(ALevelDoor* DoorToPair, AActor* ActorToClip = nullptr);
 
+	// Called to update the clip plane of the camera
+	UFUNCTION(BlueprintCallable)
+	void UpdateClipPlane();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,10 +54,6 @@ protected:
 
 	UFUNCTION()
 	void OnTZEndOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	// Called to update the clip plane of the camera
-	UFUNCTION(BlueprintCallable)
-	void UpdateClipPlane();
 
 	// Called to check if the item colliding with the TriggerZone should teleport to the paired door
 	void GetShouldTeleport();

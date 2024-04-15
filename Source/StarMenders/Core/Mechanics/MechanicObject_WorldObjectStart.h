@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Core/Mechanics/MechanicObject_Parent.h"
+#include "Core/Mechanics/MechanicObject_Output.h"
 #include "MechanicObject_WorldObjectStart.generated.h"
 
 UCLASS()
-class STARMENDERS_API AMechanicObject_WorldObjectStart : public AMechanicObject_Parent
+class STARMENDERS_API AMechanicObject_WorldObjectStart : public AMechanicObject_Output
 {
 	GENERATED_BODY()
 
@@ -18,9 +18,6 @@ public:
 	virtual void ResetToDefault() override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object")
-	TSubclassOf<AActor> ObjectToSpawn;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object")
 	AActor* LiveObject = nullptr;
 	

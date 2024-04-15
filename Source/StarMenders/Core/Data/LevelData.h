@@ -78,6 +78,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
 	bool bOutputAlwaysActive = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanic Data")
+	TSubclassOf<AActor> ObjectToSpawn = nullptr;
+
 public:
 	FOutputMechanicData();
 	~FOutputMechanicData();
