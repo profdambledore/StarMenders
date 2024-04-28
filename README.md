@@ -1,12 +1,12 @@
 # StarMenders
 
- A tileset generation system in Unreal Engine 4/5
+ A time-manipulation puzzle game created in Unreal Engine 5
 
  <p align="center">
   <img src="https://github.com/profdambledore/StarMenders/blob/main/Images/logov1.PNG" />
 </p>
 
- In this project, I have created a tileset-based generation system to allow worlds to be generated via separate 'islands' with doorways connecting each one in order.  Using a tree data structure to store the world elements, users can generate, clear and regenerate worlds at a call of a function, while a seed system allows users to create the same worlds multiple times via an integer.
+ In this project, I am creating a space themed time-manipulating puzzle game.  Players have to record their movement and actions on different tracks and play back their recordings to complete puzzles and stop black holes from forming.
 
 ## Project Document
  
