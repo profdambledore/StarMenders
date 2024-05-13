@@ -76,10 +76,14 @@ void ALevelController::SetupLevel(FName InLevelID)
 		OutputMechanics.Add(ExitDoor);
 		ExitDoor->InputRequirement = FoundRoom.ExitDoorRequirements;
 		ExitDoor->SetAlwaysActive();
+
+		// Make some spawn info to make the object always spawn
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
 		// Next, spawn the required RecordPads
 		for (FRecordPadData i : FoundRoom.RecordPads) {
-			ARecordPad* NewPad = GetWorld()->SpawnActor<ARecordPad>(RecordPadClass, i.Transform);
+			ARecordPad* NewPad = GetWorld()->SpawnActor<ARecordPad>(RecordPadClass, i.Transform, SpawnInfo);
 			NewPad->AddActorWorldOffset(WorldLocationOffset);
 			RecordPads.Add(NewPad);
 			NewPad->SetupVisualElements(i.Index);
@@ -87,7 +91,7 @@ void ALevelController::SetupLevel(FName InLevelID)
 
 		// Follow with the Output Mechanic Objects
 		for (FOutputMechanicData j : FoundRoom.OutputMechanics) {
-			AMechanicObject_Output* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Output>(j.Class, j.Transform);
+			AMechanicObject_Output* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Output>(j.Class, j.Transform, SpawnInfo);
 			NewMechanic->AddActorWorldOffset(WorldLocationOffset);
 			NewMechanic->ObjectName = j.ID;
 			NewMechanic->InputRequirement = j.InputRequirements;
@@ -99,7 +103,7 @@ void ALevelController::SetupLevel(FName InLevelID)
 
 		// And the Input Mechanic Objects
 		for (FInputMechanicData j : FoundRoom.InputMechanics) {
-			AMechanicObject_Input* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Input>(j.Class, j.Transform);
+			AMechanicObject_Input* NewMechanic = GetWorld()->SpawnActor<AMechanicObject_Input>(j.Class, j.Transform, SpawnInfo);
 			NewMechanic->AddActorWorldOffset(WorldLocationOffset);
 			NewMechanic->ObjectName = j.ID;
 			for (FName l : j.OutputIDs) {
