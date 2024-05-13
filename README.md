@@ -10,7 +10,7 @@
 
 ## Project Document
  
- [Coming Soon]()
+ [Link](https://github.com/profdambledore/StarMenders/blob/main/Docs/Star_Menders.pdf)
 
  ## Latest Update
 <table><tr><td valign="center" width="100%">
