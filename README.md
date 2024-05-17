@@ -14,35 +14,36 @@
 
  ## Latest Update
 <table><tr><td valign="center" width="100%">
- 
-### v0.Ma - Main Menu Start<br>
-Added Assets from PolygonShops<br>
-Created new level for the main menu<br>
-Created v1 of the Logo (see Images/logov1)<br>
-
----------------------------------------------------------<br>
 
 ### v0.9a - InGameLevel Part One
 
  <p align="center">
-  <img src="https://github.com/profdambledore/StarMenders/blob/main/Images/v9-001.PNG" />
+  <img src="https://github.com/profdambledore/StarMenders/blob/main/Images/v9-005.PNG" />
 </p>
 
--- LevelController  --<br>
-Added FActorSpawnParameters SpawnInfo, used to make the objects always spawn<br>
-Added SpawnInfo to each spawn loop<br>
+-- LevelSelect_Master  --<br>
+Added two text box components, one for the name of the planet and one for the tagline<br>
+Implemented UpdateWidgetData, which is called to update the two text boxes<br>
+- This function will be updated in the future to update more information about the planet/level the player is hovering, such as best time and if completed<br>
 
--- InGameLevel --<br>
-Worked on the environment for the ship part of the game (see Images)<br>
-Added Level objects, including LevelSelect, LevelController, Portal Doors and more<br>
+-- LevelSelector  --<br>
+Added WidgetComponent, used to display the Selector UI<br>
+Added a pointer to the new PlanetDataTable and renamed the WorldMapDataTable to SectorDataTable<br>
+Also added a new FObjectFinder to find and store the PlanetDataTable<br>
+Updated SetActiveSector to now use the updated SectorData and PlanetData structs<br>
+Implemented GetPlanetData function, which simply returns a FPlanetData row from the PlanetDataTable<br>
+Added an additional FObjectFinder to find and set the LevelSelector widget class<br>
+Updated Tick<br>
+ - Now checks if the Selector is in use.  If so, fire a trace in an identical way to Interact
+ - If the trace hits a component, make the WidgetComponent visible, get the hit planet's data, update the widgets text boxes and modify the components location and rotation<br>
+ - Simply, when a planet is hovered, the widget rotates to face the player camera and displays the name and tagline of the planet (see Images/v9-005)<br>
 
--- MainMenuLevel --<br>
-Moved 'Star' meteorites closer to the camera<br>
-Converted the meteorites into MainMenuObjects - On BeginPlay, choose a random axis to rotate 1 degree on each tick<br>
+-- SelectorData  --<br>
+Removed FPlanetData TArray from SectorData, now a TArray of FNames<br>
+Removed FPlanetData TArray from SectorData, now a TArray of FNames<br>
 Added MainMenuUI element, currently has three buttons<br>
- - The Play button takes the player to the InGame level<br>
- - The TestEnvironment button takes the player to the TestEnvironment<br>
- - The Exit button exits the game<br>
+- Planets are now defined in the PlanetDataTable instead of the SectorDataTable.  Previous iterations only required the use of the level ID tied to the planet, such as spawning a new level.  However, more data is required by the LevelSelectorUI.<br>
+ - Simply put, Sectors are still made up of FPlanetData but the FSectorData does not directly store the planets themselves, they are kept in a different data table.  This allows planet data to be collected more easily (via FindRow with the new table) and at a slight improvement to performance (dont need to get the current sector row then iterate over the planet array until the matching planet is found)<br>
 
 </td></tr></tr></table> 
 <!---
