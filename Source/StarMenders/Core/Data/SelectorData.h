@@ -11,14 +11,22 @@
 #include "SelectorData.generated.h"
 
 USTRUCT(BlueprintType, Category = "Levels")
-struct STARMENDERS_API FPlanetData
+struct STARMENDERS_API FPlanetData : public FTableRowBase
 {
 public:
 	GENERATED_BODY();
 
-	// The ID of the planet data of this level
+	// The ID of the level that is associated with this planet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
-	FName PlanetID;
+	FName LevelID;
+
+	// The name of the planet
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Planet Data")
+	FString PlanetName = "Default Name";
+
+	// The tagline of the planet
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Planet Data")
+	FString Tagline = "Default Tagline";
 
 	// The static mesh of the planet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Planet Data")
@@ -65,7 +73,7 @@ public:
 
 	// The planets which are contained in this sector
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sector Data")
-	TArray<FPlanetData> PlanetIDs;
+	TArray<FName> PlanetIDs;
 
 public:
 	FSectorData();

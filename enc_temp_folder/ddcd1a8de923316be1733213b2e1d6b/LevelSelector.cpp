@@ -25,6 +25,7 @@ ALevelSelector::ALevelSelector()
 	// Next, setup the SelectorWidget
 	SelectorWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Selector Widget Component"));
 	SelectorWidgetComponent->SetupAttachment(Root, "");
+	SelectorWidgetComponent->SetRelativeRotation(UKismetMathLibrary::FindLookAtRotation(SelectorWidgetComponent->GetComponentLocation(), TargetViewCamera->GetComponentLocation()));
 
 	// Get a reference to the planet and sector data table
 	ConstructorHelpers::FObjectFinder<UDataTable>DTObject(TEXT("/Game/Core/Level/DT_SectorData"));
@@ -75,11 +76,11 @@ void ALevelSelector::Tick(float DeltaTime)
 		// Get the player's mouse location in world space
 		CharacterUsing->PC->DeprojectMousePositionToWorld(MouseLoc, MouseDir);
 
-		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, MouseLoc, MouseLoc + (MouseDir * 2000), ECC_WorldDynamic, TraceParams);
+		bool InteractTrace = GetWorld()->LineTraceSingleByChannel(TraceHit, MouseLoc, MouseLoc + 900, ECC_WorldDynamic, TraceParams);
 		//DrawDebugLine(GetWorld(), MouseLoc + (MouseDir * 490), MouseLoc + (MouseDir * 500), FColor::Red, false, 5, 2, 5);
 
 		// Check if the trace hit a component.
-		if (TraceHit.GetActor() == this) {
+		if (TraceHit.GetActor()) {
 			UE_LOG(LogTemp, Warning, TEXT("Hit Comp"));
 			// Go through the array and find the component that matches the component hit
 			for (FPlanetVisualData i : PlanetVisuals) {
@@ -91,15 +92,11 @@ void ALevelSelector::Tick(float DeltaTime)
 					FPlanetData NewPlanet = GetPlanetData(i.LevelID);
 					SelectorUI->UpdateWidgetData(NewPlanet.PlanetName, NewPlanet.Tagline);
 					SelectorWidgetComponent->SetWorldLocation(TraceHit.Location);
-					SelectorWidgetComponent->AddLocalOffset(FVector(0.0f, 0.0f, -50.0f));
-					SelectorWidgetComponent->SetRelativeRotation(UKismetMathLibrary::FindLookAtRotation(SelectorWidgetComponent->GetComponentLocation(), TargetViewCamera->GetComponentLocation()));
 				}
 			}
 		}
-		else {
-			if (SelectorWidgetComponent->IsVisible()) {
-				SelectorWidgetComponent->SetVisibility(false, true);
-			}
+		else if (SelectorWidgetComponent->IsVisible()) {
+			SelectorWidgetComponent->SetVisibility(false, true);
 		}
 	}
 }

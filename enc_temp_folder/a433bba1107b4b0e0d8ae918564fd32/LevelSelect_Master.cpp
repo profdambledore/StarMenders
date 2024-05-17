@@ -5,6 +5,4 @@
 
 void ULevelSelect_Master::UpdateWidgetData(FString NewName, FString NewTag)
 {
-	NameText->SetText(FText::FromString(NewName));
-	TaglineText->SetText(FText::FromString(NewTag));
 }

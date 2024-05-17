@@ -7,6 +7,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/WidgetComponent.h"
 
 #include "Core/Data/SelectorData.h"
 
@@ -42,6 +43,8 @@ protected:
 
 	void AddNewPlanetVisual(int Target);
 
+	FPlanetData GetPlanetData(FName PlanetID);
+
 public:	
 	/// -- Components --
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
@@ -51,6 +54,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* TargetViewCamera = nullptr;
 
+	// WidgetComponent used to display the InGame UI
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UWidgetComponent* SelectorWidgetComponent;
+
 	// TArray of additional components added after initialization
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	TArray<FPlanetVisualData> PlanetVisuals;
@@ -59,9 +66,12 @@ public:
 	// Bool to denote if the Level Selector is currently in use
 	bool bCurrentlyInUse = false;
 
-	/// -- Data Table Pointer --
+	/// -- Data Table Pointers --
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
-	UDataTable* WorldMapDataTable = nullptr;
+	UDataTable* SectorDataTable = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	UDataTable* PlanetDataTable = nullptr;
 
 protected:
 	/// -- Pointers --
@@ -70,4 +80,7 @@ protected:
 
 	// Pointer to the character using this LevelSelector
 	class ACharacter_Default* CharacterUsing = nullptr;
+
+	// Pointer to the UI class in the WidgetComponent
+	class ULevelSelect_Master* SelectorUI = nullptr;
 };

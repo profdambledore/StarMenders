@@ -51,7 +51,7 @@ void ACharacter_Default::BeginPlay()
 
 	// Get reference to the interact widget class
 	MenuUI = Cast<UInGame_Master>(MenuWidgetComponent->GetWidget());
-	MenuUI->SetPlayerOwner(this);
+	//MenuUI->SetPlayerOwner(this);
 }
 
 void ACharacter_Default::MoveX(float AxisValue)
