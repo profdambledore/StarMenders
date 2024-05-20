@@ -51,7 +51,6 @@ void ALevelSelector::BeginPlay()
 
 	// Get reference to the interact widget class
 	SelectorUI = Cast<ULevelSelect_Master>(SelectorWidgetComponent->GetWidget());
-	//MenuUI->SetPlayerOwner(this);
 
 	LevelController = Cast<ALevelController>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelController::StaticClass()));
 	SetActiveSector("sec_tutorial");
@@ -83,14 +82,20 @@ void ALevelSelector::Tick(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("Hit Comp"));
 			// Go through the array and find the component that matches the component hit
 			for (FPlanetVisualData i : PlanetVisuals) {
-				UE_LOG(LogTemp, Warning, TEXT("Testing Visual"));
 				if (i.Mesh == TraceHit.GetComponent()) {
 					if (!SelectorWidgetComponent->IsVisible()) {
 						SelectorWidgetComponent->SetVisibility(true, true);
 					}
-					FPlanetData NewPlanet = GetPlanetData(i.LevelID);
-					SelectorUI->UpdateWidgetData(NewPlanet.PlanetName, NewPlanet.Tagline);
-					SelectorWidgetComponent->SetWorldLocation(TraceHit.Location);
+
+					if (LevelController->GetLevelUnlocked(i.LevelID)) {
+						FPlanetData NewPlanet = GetPlanetData(i.LevelID);
+						SelectorUI->UpdateWidgetData(NewPlanet.PlanetName, NewPlanet.Tagline);
+					}
+					else {
+						SelectorUI->UpdateWidgetData("???", "???");
+					}
+
+					SelectorWidgetComponent->SetWorldLocation(i.Mesh->GetComponentLocation());
 					SelectorWidgetComponent->AddLocalOffset(FVector(0.0f, 0.0f, -50.0f));
 					SelectorWidgetComponent->SetRelativeRotation(UKismetMathLibrary::FindLookAtRotation(SelectorWidgetComponent->GetComponentLocation(), TargetViewCamera->GetComponentLocation()));
 				}
@@ -127,8 +132,11 @@ void ALevelSelector::PrimaryInteract()
 		for (FPlanetVisualData i : PlanetVisuals) {
 			UE_LOG(LogTemp, Warning, TEXT("Testing Visual"));
 			if (i.Mesh == TraceHit.GetComponent()) {
-				// Call SetupLevel in the controller with the matching data
-				LevelController->SetupLevel(GetPlanetData(i.LevelID).LevelID);
+				// Check if the level is unlocked
+				if (LevelController->GetLevelUnlocked(i.LevelID)) {
+					// Call SetupLevel in the controller with the matching data
+					LevelController->SetupLevel(GetPlanetData(i.LevelID).LevelID);
+				}
 			}
 		}
 	}

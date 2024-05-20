@@ -8,6 +8,7 @@
 #include "Core/Data/LevelData.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "LevelController.generated.h"
 
@@ -30,12 +31,21 @@ public:
 	// Called to clear the current level
 	void ClearLevel();
 
+	/// -- Selector Functions --
+	// Called to return if a level is unlocked or not
+	bool GetLevelUnlocked(FName InLevelID);
+
 	/// -- Recording and Playing --
 	// Called to start playback of a level and record on a selected pad
 	void StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Default* Character);
 
 	// Called to end the playback of a level
 	void EndLevelPlayback();
+
+	/// -- Saving and Loading --
+	void SaveGameToSlot(int NewSlotID);
+	void SaveGameToMaster(const FString& SlotName, const int32 UserIndex, USaveGame* LoadedGameData);
+	void EndSaving(const FString& SlotName, const int32 UserIndex, bool bSuccess);
 
 protected:
 	// Called when the game starts or when spawned
@@ -98,6 +108,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
 	UDataTable* LevelDataTable = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unlocked Levels")
+	TMap<FName, float> UnlockedPlanets;
+
+	FName LastSectorVisited;
+	FName LastPlanetVisisted;
 private:
 
 };

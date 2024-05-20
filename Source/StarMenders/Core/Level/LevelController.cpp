@@ -9,6 +9,8 @@
 #include "Core/Level/LevelDoor.h"
 #include "Core/Mechanics/MechanicObject_Input.h"
 #include "Core/Mechanics/MechanicObject_Output.h"
+#include "Core/Save/Parent_SaveGame.h"
+#include "Core/Game/Parent_GameInstance.h"
 
 // Sets default values
 ALevelController::ALevelController()
@@ -41,8 +43,12 @@ void ALevelController::BeginPlay()
 	ExitDoor->SetupPairedDoor(HiddenShipDoor);
 	HiddenShipDoor->SetupPairedDoor(ExitDoor, ShipDoor);
 
-	//SetupLevel(LevelID);
-	
+	//UnlockedPlanets.Add("planet_tutorial_recordia", 0.0f);
+	//SaveGameToSlot(1);
+
+	// Get the game intsance and get the Load_UnlockedPlanets
+	UParent_GameInstance* GI = Cast<UParent_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	UnlockedPlanets = GI->Load_UnlockedPlanets;
 }
 
 // Called every frame
@@ -121,6 +127,10 @@ void ALevelController::SetupLevel(FName InLevelID)
 		LevelMesh->SetStaticMesh(FoundRoom.LevelMesh);
 	}
 	
+	// Update the LastPlanetVisited
+	LastPlanetVisisted = InLevelID;
+
+	SaveGameToSlot(1);
 }
 
 void ALevelController::ClearLevel()
@@ -147,6 +157,14 @@ void ALevelController::ClearLevel()
 		}
 		OutputMechanics.Empty();
 	}
+}
+
+bool ALevelController::GetLevelUnlocked(FName InLevelID)
+{
+	if (UnlockedPlanets.Find(InLevelID)) {
+		return true;
+	}
+	return false;
 }
 
 void ALevelController::StartLevelPlayback(ARecordPad* PadToRecordOn, ACharacter_Default* Character)
@@ -179,4 +197,66 @@ void ALevelController::EndLevelPlayback()
 
 	// Also, reopen the entrance door
 	EntranceDoor->SetDoorState(true);
+}
+
+void ALevelController::SaveGameToSlot(int NewSlotID)
+{
+	// Start by creating a new UParent_SaveGame object
+	UParent_SaveGame* NewSave = Cast<UParent_SaveGame>(UGameplayStatics::CreateSaveGameObject(UParent_SaveGame::StaticClass()));
+
+	// Set up the delegate
+	FAsyncSaveGameToSlotDelegate SaveDelegate;
+	SaveDelegate.BindUObject(this, &ALevelController::EndSaving);
+
+	NewSave->SaveSlotID = NewSlotID;
+	NewSave->UnlockedPlanets = UnlockedPlanets;
+
+	UParent_GameInstance* GI = Cast<UParent_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	UGameplayStatics::AsyncSaveGameToSlot(NewSave, "Save0", 1, SaveDelegate);
+
+	// Next, load the MasterSave
+	// Setup the load delegate
+	FAsyncLoadGameFromSlotDelegate LoadDelegate;
+	LoadDelegate.BindUObject(this, &ALevelController::SaveGameToMaster);
+	UGameplayStatics::AsyncLoadGameFromSlot("MasterSave", 0, LoadDelegate);
+}
+
+void ALevelController::SaveGameToMaster(const FString& SlotName, const int32 UserIndex, USaveGame* LoadedGameData)
+{
+	UMaster_SaveGame* MasterSave;
+
+	if (LoadedGameData) {
+		// Start by getting the game instance
+		UParent_GameInstance* GI = Cast<UParent_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+		// Search through the MasterSave for the save slot matching the current save
+		// Once found, update the LastPlanetVisisted
+		MasterSave = Cast<UMaster_SaveGame>(LoadedGameData);
+		for (FSaveData i : MasterSave->SaveGames) {
+			if (i.SaveName == GI->CurrentSaveName) {
+				i.LastPlanet = LastPlanetVisisted;
+			}
+		}
+	}
+	else {
+		MasterSave = Cast<UMaster_SaveGame>(UGameplayStatics::CreateSaveGameObject(UMaster_SaveGame::StaticClass()));
+		MasterSave->SaveGames.Add(FSaveData(0, "Save0", LastPlanetVisisted));
+	}
+
+	// Then save the MasterSave
+	// Set up the delegate
+	FAsyncSaveGameToSlotDelegate SaveDelegate;
+	SaveDelegate.BindUObject(this, &ALevelController::EndSaving);
+
+	UGameplayStatics::AsyncSaveGameToSlot(MasterSave, "MasterSave", 1, SaveDelegate);
+}
+
+void ALevelController::EndSaving(const FString& SlotName, const int32 UserIndex, bool bSuccess)
+{
+	if (bSuccess) {
+		UE_LOG(LogTemp, Warning, TEXT("Save Complete!"));
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Save Failed!"));
+	}
 }

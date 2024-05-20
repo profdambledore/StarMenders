@@ -123,6 +123,7 @@ protected:
 	class ALevelSelector* CurrentLevelSelector = nullptr;
 
 	// Pointer to the record pad currently being accessed
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pointers");
 	class ARecordPad* CurrentRecordPad = nullptr;
 
 	// -- RecordedInputs --
